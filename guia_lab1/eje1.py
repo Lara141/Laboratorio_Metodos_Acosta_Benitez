@@ -1,5 +1,5 @@
 import random
-import time  # Importamos la librería para medir el tiempo
+import time
 
 n = int(input("Ingrese la cantidad de números a sumar (N): "))
 

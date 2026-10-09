@@ -1,22 +1,13 @@
 import math
 
 def calcular_iteraciones_teoricas(a, b, error_deseado):
-    """
-    Calcula cuántas iteraciones (n) son necesarias teóricamente para que 
-    el error no supere el error deseado (E).
-    Fórmula utilizada: n >= (ln(b - a) - ln(E)) / ln(2)
-    """
     # Aplicamos la fórmula logarítmica para despejar la cantidad de iteraciones[cite: 3]
     n = (math.log(b - a) - math.log(error_deseado)) / math.log(2)
     return math.ceil(n)
 
 def ejecutar_intervalo_medio(f, a, b, error_deseado):
-    """
-    Aplica el método de bisección dividiendo siempre el intervalo a la mitad.
-    Devuelve una lista con el historial de cada iteración y el valor final de la raíz.
-    """
     iteraciones = []
-    n = 1 
+    n = 1
     
     while True:
         # La posición de la raíz se aproxima situándola en el punto medio del subintervalo[cite: 3, 4]

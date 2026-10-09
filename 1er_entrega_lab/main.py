@@ -116,18 +116,21 @@ def main():
             if opcion in ['1', '2']:
                 while True:
                     print("\n--- Opciones de Intervalo ---")
-                    print("1 - Utilizar el intervalo de la menor de las raíces")
+                    print("1 - Utilizar el intervalo con la menor de las raíces positivas")
                     print("2 - Ingresar un intervalo manual")
                     print("3 - Volver al menú principal")
                     sub_op = input("Elige una opción (1, 2 o 3): ")
                     
                     if sub_op == '1':
-                        if intervalos:
-                            a, b = intervalos[0]
-                            print(f"\n> Utilizando el intervalo: [{a}, {b}]")
+                        # Filtramos los intervalos para encontrar los que puedan contener raíces positivas
+                        intervalos_positivos = [inter for inter in intervalos if inter[1] > 0]
+                        
+                        if intervalos_positivos:
+                            a, b = intervalos_positivos[0]
+                            print(f"\n> Utilizando el intervalo con la menor raíz positiva: [{a}, {b}]")
                             break
                         else:
-                            print("\n>> Error: No se encontraron raíces en el tanteo para usar esta opción. Ingresa un intervalo manual.")
+                            print("\n>> Error: No se encontraron raíces positivas en el tanteo para usar esta opción. Ingresa un intervalo manual.")
                             continue
                     elif sub_op == '2':
                         try:
@@ -140,7 +143,7 @@ def main():
                     elif sub_op == '3':
                         break
                     else:
-                        print("\nXOpción no válida.")
+                        print("\nX Opción no válida.")
 
                 if sub_op == '3':
                     continue  

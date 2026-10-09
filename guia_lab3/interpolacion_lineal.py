@@ -1,18 +1,11 @@
 def ejecutar_interpolacion_lineal(f, a, b, error_deseado, max_iter=100):
-    """
-    Aplica el método de interpolación lineal (Regula Falsi).
-    Verifica las condiciones previas del intervalo inicial antes de iterar.
-    Imprime detalladamente el desarrollo matemático de cada iteración, 
-    sustituyendo en la fórmula y mostrando el cálculo del error.
-    Devuelve una lista con el historial y el valor final de la raíz.
-    """
     print("\nVERIFICACIÓN DEL INTERVALO INICIAL")
     print("="*50)
     
     # 1. Evaluamos la función en los extremos iniciales
     fa = f(a)
     fb = f(b)
-    prod_ab = fa * fb
+    prod_ab = fa * fb 
     
     print(f"Límite inferior 'a' = {a} -> f({a}) = {fa:.6f}")
     print(f"Límite superior 'b' = {b} -> f({b}) = {fb:.6f}")

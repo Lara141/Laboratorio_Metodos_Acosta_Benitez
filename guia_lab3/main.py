@@ -96,7 +96,7 @@ def main():
         # 3. Pedir el error deseado
         while True:
             try:
-                error_input = float(input("\nIngresa la tolerancia deseada (ej. 0.0001): "))
+                error_input = float(input("\nIngresa la tolerancia deseada (ej. 0.001): "))
                 break
             except ValueError:
                 print("Debes ingresar un valor numérico para el error.")

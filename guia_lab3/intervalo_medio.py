@@ -16,7 +16,7 @@ def ejecutar_intervalo_medio(f, a, b, error_deseado):
     Devuelve una lista con el historial de cada iteración y el valor final de la raíz.
     """
     iteraciones = []
-    n = 1
+    n = 1 
     
     while True:
         # La posición de la raíz se aproxima situándola en el punto medio del subintervalo[cite: 3, 4]

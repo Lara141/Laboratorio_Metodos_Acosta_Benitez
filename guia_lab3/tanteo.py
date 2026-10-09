@@ -17,7 +17,7 @@ def tabla_tanteo(f, inicio, fin, paso):
         x_actual = x_vals[i]
         y_actual = f(x_actual)
         valores.append((x_actual, y_actual))
-
+ 
         # Si estamos en el primer valor y es exactamente 0, es una raíz
         if i == 0 and y_actual == 0:
             intervalos_raiz.append((x_actual, x_actual))

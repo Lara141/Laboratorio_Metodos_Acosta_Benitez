@@ -1,11 +1,6 @@
 import numpy as np
 
 def tabla_tanteo(f, inicio, fin, paso):
-    """
-    Evalúa la función f en el rango [inicio, fin] con un incremento 'paso'.
-    Devuelve la tabla de valores generada y una lista con todos los intervalos 
-    [a, b] donde se detecta un cambio de signo (lo que indica una raíz).
-    """
     valores = []
     # Generamos los valores de x basándonos en el inicio, fin y paso
     x_vals = np.arange(inicio, fin + paso, paso)

@@ -1,12 +1,7 @@
 import sympy as sp
 
 def ejecutar_newton_raphson(str_func, a, b, error_deseado, max_iter=100):
-    """
-    Aplica el método de Newton-Raphson.
-    Calcula internamente las derivadas de la función.
-    Imprime detalladamente las derivadas, verifica estrictamente las condiciones 
-    previas en los extremos, la Condición de Fourier, y el desarrollo de cada iteración.
-    """
+  
     # --- 0. CÁLCULO DE DERIVADAS INTERNAMENTE ---
     x = sp.Symbol('x')
     expr = sp.sympify(str_func)

@@ -1,0 +1,90 @@
+"""Programa de consola del Laboratorio 4: Gauss y Faddeev-Leverrier."""
+from __future__ import annotations
+
+import numpy as np
+
+from entrada import leer_entero_positivo, leer_matriz, leer_vector, imprimir_vector
+from gauss import eliminacion_gauss, SistemaSingularError
+from fadeev_leverrier import fadeev_leverrier
+
+
+def ejecutar_gauss():
+    print("\n=== Eliminación de Gauss ===")
+    n = leer_entero_positivo("Cantidad de ecuaciones/incógnitas: ")
+    A = leer_matriz(n, "A")
+    b = leer_vector(n, "b")
+    precision = input("Cifras significativas (Enter = precisión completa; para el ejercicio 1 use 3): ").strip()
+    try:
+        cifras = int(precision) if precision else None
+        x, triangular = eliminacion_gauss(A, b, cifras_significativas=cifras)
+    except (ValueError, SistemaSingularError) as error:
+        print(f"No se pudo resolver: {error}")
+        return
+    print("\nMatriz aumentada luego de la eliminación:")
+    print(np.array2string(triangular, precision=8, suppress_small=True))
+    print("\nSolución del sistema Ax = b:")
+    imprimir_vector(x)
+    print(f"\nResiduo ||Ax-b||₂ = {np.linalg.norm(A @ x - b):.6g}")
+    costo_texto = input("\nCoeficientes de costo por incógnita (separados por espacios; Enter para omitir): ").strip()
+    if costo_texto:
+        try:
+            costos = np.array([float(v.replace(",", ".")) for v in costo_texto.split()])
+            if costos.size != n:
+                print(f"Se esperaban {n} coeficientes de costo; no se calculó el total.")
+            else:
+                print(f"Costo total = {np.dot(costos, x):.10g}")
+        except ValueError:
+            print("No se pudo calcular el costo: ingresá números separados por espacios.")
+
+
+def ejecutar_fadeev():
+    print("\n=== Faddeev-Leverrier ===")
+    n = leer_entero_positivo("Orden de la matriz cuadrada A: ")
+    A = leer_matriz(n, "A")
+    try:
+        resultado = fadeev_leverrier(A)
+    except (ValueError, ArithmeticError, np.linalg.LinAlgError) as error:
+        print(f"No se pudo completar el cálculo: {error}")
+        return
+    print("\nPolinomio característico p(λ) = det(λI - A):")
+    coef = resultado["coefficients"]
+    terminos = [f"λ^{n}"]
+    for k, c in enumerate(coef[1:], start=1):
+        potencia = n - k
+        terminos.append(f"({c:.10g})" + (f" λ^{potencia}" if potencia > 1 else " λ" if potencia == 1 else ""))
+    print(" + ".join(terminos))
+    print("\nAutovalores y autovectores (cada columna corresponde al autovalor de igual índice):")
+    for j, valor in enumerate(resultado["eigenvalues"]):
+        vector = np.real_if_close(resultado["eigenvectors"][:, j], tol=1000)
+        valor = np.real_if_close(valor, tol=1000)
+        print(f"\nλ{j + 1} = {valor}")
+        imprimir_vector(vector, f"v{j + 1}_")
+        print(f"Residuo ||Av-λv||₂ = {resultado['residuals'][j]:.6g}")
+    print(f"\nDeterminante de A = {resultado['determinant']:.10g}")
+    if resultado["inverse"] is not None:
+        print("A es no singular; inversa obtenida por Faddeev-Leverrier:")
+        print(np.array2string(resultado["inverse"], precision=8, suppress_small=True))
+    else:
+        print("A es singular (o numéricamente cercana a singular); no existe A⁻¹.")
+
+
+def main():
+    while True:
+        print("\nLABORATORIO 4 — SISTEMAS DE ECUACIONES")
+        print("1. Resolver Ax=b por Eliminación de Gauss")
+        print("2. Analizar A por Faddeev-Leverrier")
+        print("0. Salir")
+        opcion = input("Elegí una opción: ").strip()
+        if opcion == "1":
+            ejecutar_gauss()
+        elif opcion == "2":
+            ejecutar_fadeev()
+        elif opcion == "0":
+            print("Fin del programa.")
+            break
+        else:
+            print("Opción inválida. Elegí 0, 1 o 2.")
+
+
+if __name__ == "__main__":
+    main()

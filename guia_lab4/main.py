@@ -86,17 +86,17 @@ def main():
         print("\nLABORATORIO 4 — SISTEMAS DE ECUACIONES")
         print("1. Resolver Ax=b por Eliminación de Gauss")
         print("2. Analizar A por Faddeev-Leverrier")
-        print("0. Salir")
+        print("3. Salir")
         opcion = input("Elegí una opción: ").strip()
         if opcion == "1":
             ejecutar_gauss()
         elif opcion == "2":
             ejecutar_fadeev()
-        elif opcion == "0":
+        elif opcion == "3":
             print("Fin del programa.")
             break
         else:
-            print("Opción inválida. Elegí 0, 1 o 2.")
+            print("Opción inválida. Elegí 1, 2 o 3.")
 
 
 if __name__ == "__main__":

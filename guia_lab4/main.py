@@ -1,12 +1,11 @@
-"""Programa de consola del Laboratorio 4: Gauss y Faddeev-Leverrier."""
 from __future__ import annotations
 
+import time
 import numpy as np
 
 from entrada import leer_entero_positivo, leer_matriz, leer_vector, imprimir_vector
 from gauss import eliminacion_gauss, SistemaSingularError
 from fadeev_leverrier import fadeev_leverrier
-
 
 def ejecutar_gauss():
     print("\n=== Eliminación de Gauss ===")
@@ -14,27 +13,37 @@ def ejecutar_gauss():
     A = leer_matriz(n, "A")
     b = leer_vector(n, "b")
     precision = input("Cifras significativas (Enter = precisión completa; para el ejercicio 1 use 3): ").strip()
+    
     try:
         cifras = int(precision) if precision else None
+        inicio = time.perf_counter()
+        
         x, triangular = eliminacion_gauss(A, b, cifras_significativas=cifras)
     except (ValueError, SistemaSingularError) as error:
-        print(f"No se pudo resolver: {error}")
+        print(f"\nNo se pudo resolver: {error}")
         return
-    print("\nMatriz aumentada luego de la eliminación:")
-    print(np.array2string(triangular, precision=8, suppress_small=True))
-    print("\nSolución del sistema Ax = b:")
-    imprimir_vector(x)
+        
+    fin = time.perf_counter()
     print(f"\nResiduo ||Ax-b||₂ = {np.linalg.norm(A @ x - b):.6g}")
-    costo_texto = input("\nCoeficientes de costo por incógnita (separados por espacios; Enter para omitir): ").strip()
-    if costo_texto:
-        try:
-            costos = np.array([float(v.replace(",", ".")) for v in costo_texto.split()])
-            if costos.size != n:
-                print(f"Se esperaban {n} coeficientes de costo; no se calculó el total.")
-            else:
-                print(f"Costo total = {np.dot(costos, x):.10g}")
-        except ValueError:
-            print("No se pudo calcular el costo: ingresá números separados por espacios.")
+    
+    # Menú iterativo para el cálculo del costo
+    while True:
+        respuesta = input("\n¿Desea calcular el costo total? (s/n): ").strip().lower()
+        if respuesta in ['s', 'si', 'sí']:
+            costo_texto = input("Ingrese los coeficientes de costo por incógnita (separados por espacios): ").strip()
+            try:
+                costos = np.array([float(v.replace(",", ".")) for v in costo_texto.split()])
+                if costos.size != n:
+                    print(f"Se esperaban {n} coeficientes de costo; no se calculó el total.")
+                else:
+                    print(f"Costo total = {np.dot(costos, x):.10g}")
+            except ValueError:
+                print("No se pudo calcular el costo: ingresá números separados por espacios.")
+            break
+        elif respuesta in ['n', 'no']:
+            break
+        else:
+            print("Por favor, responda 's' (sí) o 'n' (no).")
 
 
 def ejecutar_fadeev():

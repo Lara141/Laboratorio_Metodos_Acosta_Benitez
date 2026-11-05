@@ -1,4 +1,3 @@
-"""Eliminación de Gauss con pivoteo parcial para sistemas Ax = b."""
 from __future__ import annotations
 
 import numpy as np
@@ -9,12 +8,6 @@ class SistemaSingularError(ValueError):
 
 
 def eliminacion_gauss(A, b, tolerancia: float = 1e-12, cifras_significativas: int | None = None):
-    """Resuelve Ax=b y devuelve (x, matriz_aumentada_escalonada).
-
-    Requisitos: A cuadrada y b con la misma cantidad de filas. Usa pivoteo
-    parcial para reducir el error numérico y detectar pivotes nulos. Si se
-    indica cifras_significativas, redondea cada operación a esa precisión.
-    """
     A = np.array(A, dtype=float, copy=True)
     b = np.array(b, dtype=float, copy=True).reshape(-1)
     if A.ndim != 2 or A.shape[0] != A.shape[1]:
@@ -36,30 +29,91 @@ def eliminacion_gauss(A, b, tolerancia: float = 1e-12, cifras_significativas: in
     escala = max(1.0, float(np.linalg.norm(A, ord=np.inf)))
     umbral = tolerancia * escala
 
-    # Eliminación hacia adelante con pivoteo parcial.
-    for columna in range(n):
-        fila_pivote = columna + int(np.argmax(np.abs(aumentada[columna:, columna])))
-        if abs(aumentada[fila_pivote, columna]) <= umbral:
-            raise SistemaSingularError(
-                "No hay pivote distinto de cero: el sistema es singular o casi singular "
-                "y no tiene una solución única confiable."
-            )
-        if fila_pivote != columna:
-            aumentada[[columna, fila_pivote]] = aumentada[[fila_pivote, columna]]
+    print("\n" + "="*50)
+    print("1. MATRIZ AMPLIADA INICIAL")
+    print("="*50)
+    print(np.array2string(aumentada, precision=6, suppress_small=True))
 
+    # Eliminación hacia adelante (hasta la penúltima columna)
+    for columna in range(n - 1):
+        print(f"\n-ELIMINACIÓN: COLUMNA {columna + 1}-")
+        
+        # Verificación y selección del pivote
+        if abs(aumentada[columna, columna]) <= umbral:
+            fila_intercambio = -1
+            for fila in range(columna + 1, n):
+                if abs(aumentada[fila, columna]) > umbral:
+                    fila_intercambio = fila
+                    break
+            
+            if fila_intercambio != -1:
+                aumentada[[columna, fila_intercambio]] = aumentada[[fila_intercambio, columna]]
+                print(f"Se cambiaron las filas {columna + 1} y {fila_intercambio + 1} porque el valor de la fila {columna + 1} en esta columna era 0.")
+                print("Matriz ampliada tras el intercambio:")
+                print(np.array2string(aumentada, precision=6, suppress_small=True))
+            else:
+                print(f"¡Atención! Todos los valores disponibles en la columna {columna + 1} son 0.")
+                print("El sistema no tiene una solución única (se evitará dividir por cero).")
+                raise SistemaSingularError("Sistema singular detectado por columna nula.")
+
+        valor_pivote = redondear(aumentada[columna, columna])
+        print(f"Pivote elegido: fila {columna + 1}, columna {columna + 1}, valor = {valor_pivote}")
+        
+        hubo_operacion = False
         for fila in range(columna + 1, n):
-            factor = redondear(aumentada[fila, columna] / aumentada[columna, columna])
-            for j in range(columna + 1, n + 1):
-                producto = redondear(factor * aumentada[columna, j])
-                aumentada[fila, j] = redondear(aumentada[fila, j] - producto)
-            aumentada[fila, columna] = 0.0
+            if abs(aumentada[fila, columna]) > umbral:
+                factor = redondear(aumentada[fila, columna] / aumentada[columna, columna])
+                print(f"Operación: Fila {fila + 1} = Fila {fila + 1} - ({factor}) * Fila {columna + 1}")
+                
+                for j in range(columna + 1, n + 1):
+                    producto = redondear(factor * aumentada[columna, j])
+                    aumentada[fila, j] = redondear(aumentada[fila, j] - producto)
+                aumentada[fila, columna] = 0.0
+                hubo_operacion = True
 
-    # Sustitución regresiva.
+        if hubo_operacion:
+            print("Matriz ampliada resultante después de las operaciones:")
+            print(np.array2string(aumentada, precision=6, suppress_small=True))
+        else:
+            print("No se requirieron operaciones para anular los elementos debajo del pivote.")
+
+    # Verificación final para el último elemento de la diagonal
+    if abs(aumentada[n - 1, n - 1]) <= umbral:
+        raise SistemaSingularError("El sistema es singular o casi singular: el último pivote es nulo.")
+
+    print("\n" + "*"*50)
+    print("2. MATRIZ TRIANGULAR SUPERIOR OBTENIDA")
+    print("*"*50)
+    print(np.array2string(aumentada, precision=6, suppress_small=True))
+
+    print("\n" + "*"*50)
+    print("3. SUSTITUCIÓN HACIA ATRÁS")
+    print("*"*50)
     x = np.zeros(n, dtype=float)
     for fila in range(n - 1, -1, -1):
         resto = 0.0
+        terminos_str = []
         for j in range(fila + 1, n):
-            resto = redondear(resto + redondear(aumentada[fila, j] * x[j]))
+            valor_producto = redondear(aumentada[fila, j] * x[j])
+            resto = redondear(resto + valor_producto)
+            terminos_str.append(f"({redondear(aumentada[fila, j])} * {redondear(x[j])})")
+        
         x[fila] = redondear((aumentada[fila, n] - resto) / aumentada[fila, fila])
+        
+        lado_izquierdo = f"x{fila + 1}"
+        if terminos_str:
+            ecuacion = f"[{redondear(aumentada[fila, n])} - ({' + '.join(terminos_str)})] / {redondear(aumentada[fila, fila])}"
+        else:
+            ecuacion = f"{redondear(aumentada[fila, n])} / {redondear(aumentada[fila, fila])}"
+            
+        print(f"Cálculo de {lado_izquierdo}:")
+        print(f"  {lado_izquierdo} = {ecuacion}")
+        print(f"  {lado_izquierdo} = {x[fila]}\n")
+
+    print("*"*50)
+    print("4. VALORES FINALES OBTENIDOS PARA LAS INCÓGNITAS")
+    print("*"*50)
+    for i in range(n):
+        print(f"x_{i + 1} = {x[i]}")
 
     return x, aumentada

@@ -25,7 +25,8 @@ def ejecutar_gauss():
         
     fin = time.perf_counter()
     print(f"\nResiduo ||Ax-b||₂ = {np.linalg.norm(A @ x - b):.6g}")
-    
+    print(f"Tiempo de ejecución: {fin - inicio:.6f} segundos")
+
     # Menú iterativo para el cálculo del costo
     while True:
         respuesta = input("\n¿Desea calcular el costo total? (s/n): ").strip().lower()

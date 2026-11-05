@@ -51,6 +51,7 @@ def ejecutar_fadeev():
     print("\n=== Faddeev-Leverrier ===")
     n = leer_entero_positivo("Orden de la matriz cuadrada A: ")
     A = leer_matriz(n, "A")
+    inicio = time.perf_counter()
     try:
         resultado = fadeev_leverrier(A)
     except (ValueError, ArithmeticError, np.linalg.LinAlgError) as error:
@@ -76,6 +77,8 @@ def ejecutar_fadeev():
         print(np.array2string(resultado["inverse"], precision=8, suppress_small=True))
     else:
         print("A es singular (o numéricamente cercana a singular); no existe A⁻¹.")
+    fin = time.perf_counter()
+    print(f"\nTiempo de ejecución: {fin - inicio:.6f} segundos")
 
 
 def main():

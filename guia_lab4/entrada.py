@@ -1,4 +1,3 @@
-"""Funciones de ingreso y presentación por consola."""
 from __future__ import annotations
 
 import numpy as np

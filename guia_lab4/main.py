@@ -83,7 +83,7 @@ def ejecutar_fadeev():
 
 def main():
     while True:
-        print("\nLABORATORIO 4 — SISTEMAS DE ECUACIONES")
+        print("\n MENU")
         print("1. Resolver Ax=b por Eliminación de Gauss")
         print("2. Analizar A por Faddeev-Leverrier")
         print("3. Salir")

@@ -131,8 +131,7 @@ def mostrar_menu():
     print("=" * 55)
 
     print("1. Ingresar valores de X e Y")
-    print("2. Calcular nuevamente con los datos anteriores")
-    print("3. Salir")
+    print("2. Salir")
 
 
 def main():
@@ -160,17 +159,6 @@ def main():
                 datos_anteriores = (x, y)
 
             elif opcion == "2":
-
-                if datos_anteriores is None:
-                    print("\nNo hay datos anteriores.")
-                    continue
-
-                x, y = datos_anteriores
-
-                print("\nReutilizando los datos anteriores...")
-                mostrar_resultados(x, y)
-
-            elif opcion == "3":
 
                 print("\nFinalizando el programa...")
                 break

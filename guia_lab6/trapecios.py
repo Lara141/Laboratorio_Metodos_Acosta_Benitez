@@ -85,3 +85,54 @@ def metodo_trapecios(x, y):
         "I": I,
         "resultado": A
     }
+
+
+def generar_datos_funcion(expresion, a, b, n):
+    """
+    Genera los valores X e Y a partir de una
+    funcion matematica ingresada por el usuario.
+    """
+
+    import sympy as sp
+
+    if n < 1 or not isinstance(n, int):
+        raise ValueError(
+            "La cantidad de subintervalos debe ser un entero positivo."
+        )
+
+    if a >= b:
+        raise ValueError(
+            "El limite inferior debe ser menor que el superior."
+        )
+
+    # Definimos la variable simbolica
+    x = sp.Symbol("x")
+
+    # Interpretamos la expresion matematica
+    funcion = sp.sympify(expresion, locals={"x": x})
+
+    # Verificamos que la funcion dependa solo de x
+    if not funcion.free_symbols.issubset({x}):
+        raise ValueError("La funcion debe depender solo de x.")
+
+    # Convertimos la expresion en una funcion evaluable
+    f = sp.lambdify(x, funcion, modules=["math"])
+
+    # Calculamos la amplitud
+    h = (b - a) / n
+
+    valores_x = []
+    valores_y = []
+
+    # Generamos los puntos
+    for i in range(n + 1):
+        xi = a + i * h
+        yi = float(f(xi))
+
+        if not __import__("math").isfinite(yi):
+            raise ValueError("La funcion produce valores no finitos.")
+
+        valores_x.append(xi)
+        valores_y.append(yi)
+
+    return valores_x, valores_y

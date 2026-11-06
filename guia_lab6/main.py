@@ -4,25 +4,25 @@
 # PROGRAMA PRINCIPAL
 # ==========================================================
 
-from trapecios import metodo_trapecios, generar_datos_funcion
+from trapecios import metodo_trapecios
 
 
-def ingresar_datos_tabulados():
+def ingresar_datos():
     """
-    Solicita los valores X e Y de una tabla.
+    Solicita los valores X e Y de la tabla.
     """
 
-    print("\n--- INGRESO DE DATOS TABULADOS ---")
+    print("\n--- INGRESO DE DATOS ---")
 
-    n = int(input("Ingrese la cantidad de puntos: "))
+    cantidad = int(input("Ingrese la cantidad de puntos: "))
 
-    if n < 2:
+    if cantidad < 2:
         raise ValueError("Se necesitan al menos dos puntos.")
 
     x = []
     y = []
 
-    for i in range(n):
+    for i in range(cantidad):
         print(f"\nPunto {i}:")
         xi = float(input(f"  X{i}: "))
         yi = float(input(f"  Y{i}: "))
@@ -33,28 +33,9 @@ def ingresar_datos_tabulados():
     return x, y
 
 
-def ingresar_funcion():
-    """
-    Solicita una funcion, los limites de integracion
-    y la cantidad de subintervalos.
-    """
-
-    print("\n--- INGRESO DE FUNCION MATEMATICA ---")
-
-    expresion = input("Ingrese f(x): ")
-
-    a = float(input("Limite inferior (a): "))
-    b = float(input("Limite superior (b): "))
-    n = int(input("Cantidad de subintervalos: "))
-
-    x, y = generar_datos_funcion(expresion, a, b, n)
-
-    return x, y, (expresion, a, b)
-
-
 def mostrar_tabla(x, y):
     """
-    Muestra los puntos utilizados en la integracion.
+    Muestra los valores utilizados en el calculo.
     """
 
     print("\n--- TABLA DE VALORES ---")
@@ -65,10 +46,27 @@ def mostrar_tabla(x, y):
         print(f"{i:<8}{x[i]:<15.6f}{y[i]:<15.6f}")
 
 
+def mostrar_sumatoria(nombre, valores, resultado):
+    """
+    Muestra los terminos que forman una sumatoria
+    y su resultado.
+    """
+
+    if not valores:
+        print(f"{nombre} = 0 (sin valores interiores)")
+        return
+
+    # Convertimos los valores en texto
+    terminos = " + ".join(f"({v:.6f})" for v in valores)
+
+    print(f"{nombre} = {terminos}")
+    print(f"{nombre} = {resultado:.6f}")
+
+
 def mostrar_resultados(x, y):
     """
-    Ejecuta el metodo de Trapecios y presenta
-    el procedimiento y el resultado final.
+    Presenta la tabla, las sumatorias,
+    la sustitucion y el resultado final.
     """
 
     resultado = metodo_trapecios(x, y)
@@ -85,12 +83,24 @@ def mostrar_resultados(x, y):
     print("\n--- PROCEDIMIENTO ---")
 
     print(f"\nCantidad de subintervalos: n = {n}")
-    print(f"Amplitud: h = {h:.6f}")
 
-    print("\nSumatorias:")
-    print(f"E = {E:.6f}")
-    print(f"P = {P:.6f}")
-    print(f"I = {I:.6f}")
+    print("\nCalculo de la amplitud:")
+    print("h = (b - a) / n")
+    print(f"h = ({x[-1]:.6f} - {x[0]:.6f}) / {n}")
+    print(f"h = {h:.6f}")
+
+    print("\n--- CALCULO DE SUMATORIAS ---")
+
+    print("\nExtremos (E):")
+    mostrar_sumatoria("E", resultado["valores_E"], E)
+
+    print("\nPosiciones pares interiores (P):")
+    mostrar_sumatoria("P", resultado["valores_P"], P)
+
+    print("\nPosiciones impares interiores (I):")
+    mostrar_sumatoria("I", resultado["valores_I"], I)
+
+    print("\n--- APLICACION DE LA FORMULA ---")
 
     print("\nFormula de Trapecios:")
     print("A = (h / 2) * (E + 2P + 2I)")
@@ -101,8 +111,14 @@ def mostrar_resultados(x, y):
         f"({E:.6f} + 2({P:.6f}) + 2({I:.6f}))"
     )
 
-    print("\n--- RESULTADO FINAL ---")
-    print(f"A = {A:.8f}")
+    suma = E + 2 * P + 2 * I
+
+    print("\nOperaciones:")
+    print(f"A = ({h:.6f} / 2) * ({suma:.6f})")
+
+    print("\n" + "=" * 55)
+    print(f"RESULTADO FINAL: A = {A:.8f}")
+    print("=" * 55)
 
 
 def mostrar_menu():
@@ -111,23 +127,21 @@ def mostrar_menu():
     """
 
     print("\n" + "=" * 55)
-    print("          METODO DE TRAPECIOS")
+    print("                  METODO DE TRAPECIOS")
     print("=" * 55)
 
-    print("1. Integrar mediante datos tabulados")
-    print("2. Integrar mediante una funcion matematica")
-    print("3. Calcular nuevamente con datos anteriores")
-    print("4. Salir")
+    print("1. Ingresar valores de X e Y")
+    print("2. Calcular nuevamente con los datos anteriores")
+    print("3. Salir")
 
 
 def main():
     """
-    Controla el menu principal y la ejecucion
-    del programa.
+    Controla el menu y permite reutilizar
+    los datos ingresados anteriormente.
     """
 
     datos_anteriores = None
-    funcion_anterior = None
 
     while True:
 
@@ -139,78 +153,34 @@ def main():
 
             if opcion == "1":
 
-                x, y = ingresar_datos_tabulados()
+                x, y = ingresar_datos()
 
                 mostrar_resultados(x, y)
 
                 datos_anteriores = (x, y)
-                funcion_anterior = None
 
             elif opcion == "2":
-
-                x, y, datos_funcion = ingresar_funcion()
-
-                mostrar_resultados(x, y)
-
-                datos_anteriores = (x, y)
-                funcion_anterior = datos_funcion
-
-            elif opcion == "3":
 
                 if datos_anteriores is None:
                     print("\nNo hay datos anteriores.")
                     continue
 
-                if funcion_anterior is not None:
+                x, y = datos_anteriores
 
-                    expresion, a, b = funcion_anterior
+                print("\nReutilizando los datos anteriores...")
+                mostrar_resultados(x, y)
 
-                    print("\nFuncion anterior:", expresion)
-                    print(f"Intervalo: [{a}, {b}]")
-
-                    respuesta = input(
-                        "Desea cambiar la cantidad de "
-                        "subintervalos? (s/n): "
-                    ).lower()
-
-                    if respuesta == "s":
-
-                        n = int(input(
-                            "Nueva cantidad de subintervalos: "
-                        ))
-
-                        x, y = generar_datos_funcion(
-                            expresion, a, b, n
-                        )
-
-                        mostrar_resultados(x, y)
-                        datos_anteriores = (x, y)
-
-                    else:
-                        x, y = datos_anteriores
-                        mostrar_resultados(x, y)
-
-                else:
-                    x, y = datos_anteriores
-                    mostrar_resultados(x, y)
-
-            elif opcion == "4":
+            elif opcion == "3":
 
                 print("\nFinalizando el programa...")
-                print("Gracias por utilizar el metodo de Trapecios.")
                 break
 
             else:
                 print("\nOpcion no valida. Intente nuevamente.")
 
-        except (ValueError, TypeError, ZeroDivisionError,
-                OverflowError) as error:
+        except (ValueError, TypeError, OverflowError) as error:
             print(f"\nERROR: {error}")
 
-        except Exception as error:
-            print(f"\nNo se pudo realizar el calculo: {error}")
 
-
-# Punto de entrada del programa
 if __name__ == "__main__":
     main()

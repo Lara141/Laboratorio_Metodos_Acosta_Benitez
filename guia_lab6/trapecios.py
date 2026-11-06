@@ -32,22 +32,29 @@ def verificar_equidistancia(x, tolerancia=1e-9):
     return h
 
 
+
 def calcular_sumatorias(y):
     """
-    Calcula los valores E, P e I de la formula
-    de Trapecios.
+    Calcula las sumatorias E, P e I y guarda
+    los valores utilizados en cada una.
     """
 
-    # Suma de los extremos
-    E = y[0] + y[-1]
+    # Valores de los extremos
+    valores_E = [y[0], y[-1]]
 
-    # Suma de las posiciones interiores pares
-    P = sum(y[i] for i in range(2, len(y) - 1, 2))
+    # Valores interiores en posiciones pares
+    valores_P = [y[i] for i in range(2, len(y) - 1, 2)]
 
-    # Suma de las posiciones interiores impares
-    I = sum(y[i] for i in range(1, len(y) - 1, 2))
+    # Valores interiores en posiciones impares
+    valores_I = [y[i] for i in range(1, len(y) - 1, 2)]
 
-    return E, P, I
+    # Calculamos las sumatorias
+    E = sum(valores_E)
+    P = sum(valores_P)
+    I = sum(valores_I)
+
+    return E, P, I, valores_E, valores_P, valores_I
+
 
 
 def metodo_trapecios(x, y):
@@ -68,7 +75,7 @@ def metodo_trapecios(x, y):
     h = verificar_equidistancia(x)
 
     # Calculamos las sumatorias
-    E, P, I = calcular_sumatorias(y)
+    E, P, I, valores_E, valores_P, valores_I = calcular_sumatorias(y)
 
     # Aplicamos la formula de Trapecios
     A = (h / 2) * (E + 2 * P + 2 * I)
@@ -78,12 +85,15 @@ def metodo_trapecios(x, y):
 
     # Devolvemos los resultados al archivo main
     return {
-        "h": h,
-        "n": n,
-        "E": E,
-        "P": P,
-        "I": I,
-        "resultado": A
+    "h": h,
+    "n": n,
+    "E": E,
+    "P": P,
+    "I": I,
+    "valores_E": valores_E,
+    "valores_P": valores_P,
+    "valores_I": valores_I,
+    "resultado": A
     }
 
 

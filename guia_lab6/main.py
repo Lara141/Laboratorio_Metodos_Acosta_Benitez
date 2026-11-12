@@ -1,8 +1,4 @@
-
-# ==========================================================
 # LABORATORIO 6 - METODO DE TRAPECIOS
-# PROGRAMA PRINCIPAL
-# ==========================================================
 
 from trapecios import metodo_trapecios
 
@@ -21,6 +17,7 @@ def ingresar_datos():
 
     x = []
     y = []
+
 
     for i in range(cantidad):
         print(f"\nPunto {i}:")

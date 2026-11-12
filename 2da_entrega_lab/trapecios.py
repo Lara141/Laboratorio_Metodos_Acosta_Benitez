@@ -1,7 +1,4 @@
-
-# ==========================================================
 # METODO DE INTEGRACION NUMERICA: TRAPECIOS
-# ==========================================================
 
 def verificar_equidistancia(x, tolerancia=1e-9):
     """

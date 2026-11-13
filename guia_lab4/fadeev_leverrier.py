@@ -16,16 +16,60 @@ def fadeev_leverrier(A, tolerancia: float = 1e-10):
     def fmt(val):
         if isinstance(val, (complex, np.complex128, np.complex64)):
             if abs(val.imag) < 1e-10:
-                return f"{val.real:g}"
-            return f"{val.real:g}{val.imag:+g}j"
+                parte_real = 0.0 if val.real == 0 else val.real
+                return f"{parte_real:g}"
+            parte_real = 0.0 if val.real == 0 else val.real
+            parte_imaginaria = 0.0 if val.imag == 0 else val.imag
+            return f"{parte_real:g}{parte_imaginaria:+g}j"
+        if val == 0:
+            return "0"
         return f"{val:g}"
+
+    def array2string_limpia(valores, precision=4):
+        arreglo = np.real_if_close(np.asarray(valores), tol=1000)
+        arreglo = np.array(arreglo, copy=True)
+        umbral = 0.5 * 10 ** (-precision)
+
+        def formato_real(valor):
+            if abs(valor) <= umbral:
+                return "0"
+            return f"{valor:.{precision}f}".rstrip("0").rstrip(".")
+
+        def formato_complejo(valor):
+            real = formato_real(valor.real)
+            if abs(valor.imag) <= umbral:
+                return real
+            signo = "+" if valor.imag > 0 else "-"
+            imaginaria = formato_real(abs(valor.imag))
+            return f"({real}{signo}{imaginaria}j)"
+
+        if np.iscomplexobj(arreglo):
+            parte_real = arreglo.real.copy()
+            parte_imaginaria = arreglo.imag.copy()
+            parte_real[np.abs(parte_real) <= umbral] = 0.0
+            parte_imaginaria[np.abs(parte_imaginaria) <= umbral] = 0.0
+            arreglo = parte_real + 1j * parte_imaginaria
+            if np.all(parte_imaginaria == 0):
+                arreglo = parte_real
+        else:
+            arreglo[np.abs(arreglo) <= umbral] = 0.0
+
+        return np.array2string(
+            arreglo,
+            precision=precision,
+            suppress_small=True,
+            formatter={
+                "float_kind": formato_real,
+                "complex_kind": formato_complejo,
+            },
+        )
 
     print("\n" + "="*50)
     print("1. Primera matriz y primer coeficiente")
     print("="*50)
     B = A.copy()
     print("B_1 = A =")
-    print(np.array2string(B, precision=4, suppress_small=True))
+    print(array2string_limpia(B))
     
     diag_B = np.diag(B)
     suma_traza = " + ".join([fmt(x) for x in diag_B])
@@ -36,7 +80,7 @@ def fadeev_leverrier(A, tolerancia: float = 1e-10):
     print(f"\nb_1 = tr(B_1) = {suma_traza} = {fmt(b_1)}")
 
     print("\n" + "="*50)
-    print("2. Matrices siguientes y coeficientes")
+    print("2. Matrices siguientes y sus coeficientes")
     print("="*50)
     
     for k in range(2, n + 1):
@@ -48,15 +92,15 @@ def fadeev_leverrier(A, tolerancia: float = 1e-10):
         
         bI = b_prev * identidad
         print(f"\nb_{k-1}I =")
-        print(np.array2string(bI, precision=4, suppress_small=True))
+        print(array2string_limpia(bI))
         
         resta = B_prev - bI
         print(f"\nResta (B_{k-1} - b_{k-1}I) =")
-        print(np.array2string(resta, precision=4, suppress_small=True))
+        print(array2string_limpia(resta))
         
         B = A @ resta
         print(f"\nResultado B_{k} = A * (B_{k-1} - b_{k-1}I) =")
-        print(np.array2string(B, precision=4, suppress_small=True))
+        print(array2string_limpia(B))
         
         diag_B = np.diag(B)
         suma_traza = " + ".join([fmt(x) for x in diag_B])
@@ -70,21 +114,12 @@ def fadeev_leverrier(A, tolerancia: float = 1e-10):
     print("\n" + "="*50)
     print("3. Polinomio característico")
     print("="*50)
-    print("Sustituyendo los coeficientes obtenidos:")
-    
-    terminos_sust = [f"(-1)^{n}(\lambda^{n}"]
-    for i, b in enumerate(b_k_list, 1):
-        potencia = n - i
-        lam_str = f"\lambda^{potencia}" if potencia > 1 else ("\lambda" if potencia == 1 else "")
-        signo = "+" if -b >= 0 else "-"
-        terminos_sust.append(f" {signo} {abs(b):g}{lam_str}")
-    print("".join(terminos_sust) + ") = 0")
-    
+
     print("\nPolinomio final igualado a cero:")
-    terminos_final = [f"\lambda^{n}"]
+    terminos_final = [f"λ^{n}"]
     for i, b in enumerate(b_k_list, 1):
         potencia = n - i
-        lam_str = f"\lambda^{potencia}" if potencia > 1 else ("\lambda" if potencia == 1 else "")
+        lam_str = f"λ^{potencia}" if potencia > 1 else ("λ" if potencia == 1 else "")
         signo = "+" if -b >= 0 else "-"
         terminos_final.append(f" {signo} {abs(b):g}{lam_str}")
     polinomio_final = "".join(terminos_final) + " = 0"
@@ -114,7 +149,7 @@ def fadeev_leverrier(A, tolerancia: float = 1e-10):
         
         M = A.astype(complex) - valor * identidad
         print("\nMatriz resultante (A - λI):")
-        print(np.array2string(M, precision=4, suppress_small=True))
+        print(array2string_limpia(M))
         
         print("\nAplicando eliminación de Gauss por filas:")
         M_gauss = M.copy()
@@ -131,7 +166,7 @@ def fadeev_leverrier(A, tolerancia: float = 1e-10):
                         print(f"Fila {row+1} = Fila {row+1} - ({fmt(factor)}) * Fila {col+1}")
         
         print("\nMatriz escalonada resultante:")
-        print(np.array2string(M_gauss, precision=4, suppress_small=True))
+        print(array2string_limpia(M_gauss))
         
         print("\nSustitución hacia atrás:")
         x = np.zeros(n, dtype=complex)
@@ -152,10 +187,8 @@ def fadeev_leverrier(A, tolerancia: float = 1e-10):
                 
         print(f"\nAutovalor: {fmt(valor)}")
         print("Vector asociado:")
-        print(np.array2string(x, precision=4, suppress_small=True))
+        print(array2string_limpia(x))
         
-        # Cálculo interno con SVD para poblar el diccionario de retorno y asegurar 
-        # compatibilidad perfecta con los métodos de main.py
         _, _, vh = np.linalg.svd(M)
         vector_svd = vh.conj().T[:, -1]
         norma = np.linalg.norm(vector_svd)

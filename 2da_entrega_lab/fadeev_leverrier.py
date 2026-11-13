@@ -4,12 +4,12 @@ def fmt(val, tol=1e-10):
     if abs(val) < tol: return "0"
     return f"{val:g}"
 
-def calcular_faddeev(A: np.ndarray):
+def calcular_fadeev(A: np.ndarray):
     n = A.shape[0]
     identidad = np.eye(n)
     
    
-    print("MÉTODO DE FADDEEV-LEVERRIER")
+    print("MÉTODO DE FADEEV-LEVERRIER")
     print("-"*50)
     
     B = A.copy()

@@ -8,11 +8,11 @@ from gauss import eliminacion_gauss, SistemaSingularError
 from fadeev_leverrier import fadeev_leverrier
 
 def ejecutar_gauss():
-    print("\n=== Eliminación de Gauss ===")
+    print("\n Eliminación de Gauss")
     n = leer_entero_positivo("Cantidad de ecuaciones/incógnitas: ")
     A = leer_matriz(n, "A")
     b = leer_vector(n, "b")
-    precision = input("Cifras significativas (Enter = precisión completa; para el ejercicio 1 use 3): ").strip()
+    precision = input("Cifras significativas (Enter = precisión completa o ingrese el numero de cifras): ").strip()
     
     try:
         cifras = int(precision) if precision else None
@@ -30,7 +30,7 @@ def ejecutar_gauss():
     # Menú iterativo para el cálculo del costo
     while True:
         respuesta = input("\n¿Desea calcular el costo total? (s/n): ").strip().lower()
-        if respuesta in ['s', 'si', 'sí']:
+        if respuesta in ['s', 'si', 'sí', 'S', 'SI', 'SÍ']:
             costo_texto = input("Ingrese los coeficientes de costo por incógnita (separados por espacios): ").strip()
             try:
                 costos = np.array([float(v.replace(",", ".")) for v in costo_texto.split()])
@@ -41,14 +41,14 @@ def ejecutar_gauss():
             except ValueError:
                 print("No se pudo calcular el costo: ingresá números separados por espacios.")
             break
-        elif respuesta in ['n', 'no']:
+        elif respuesta in ['n', 'no', 'N', 'NO']:
             break
         else:
             print("Por favor, responda 's' (sí) o 'n' (no).")
 
 
 def ejecutar_fadeev():
-    print("\n=== Faddeev-Leverrier ===")
+    print("\n Fadeev Leverrier")
     n = leer_entero_positivo("Orden de la matriz cuadrada A: ")
     A = leer_matriz(n, "A")
     inicio = time.perf_counter()
@@ -64,7 +64,7 @@ def ejecutar_fadeev():
         potencia = n - k
         terminos.append(f"({c:.10g})" + (f" λ^{potencia}" if potencia > 1 else " λ" if potencia == 1 else ""))
     print(" + ".join(terminos))
-    print("\nAutovalores y autovectores (cada columna corresponde al autovalor de igual índice):")
+    print("\nAutovalores y autovectores:")
     for j, valor in enumerate(resultado["eigenvalues"]):
         vector = np.real_if_close(resultado["eigenvectors"][:, j], tol=1000)
         valor = np.real_if_close(valor, tol=1000)
@@ -73,7 +73,7 @@ def ejecutar_fadeev():
         print(f"Residuo ||Av-λv||₂ = {resultado['residuals'][j]:.6g}")
     print(f"\nDeterminante de A = {resultado['determinant']:.10g}")
     if resultado["inverse"] is not None:
-        print("A es no singular; inversa obtenida por Faddeev-Leverrier:")
+        print("A es no singular; inversa obtenida por Fadeev Leverrier:")
         print(np.array2string(resultado["inverse"], precision=8, suppress_small=True))
     else:
         print("A es singular (o numéricamente cercana a singular); no existe A⁻¹.")
@@ -84,8 +84,8 @@ def ejecutar_fadeev():
 def main():
     while True:
         print("\n MENU")
-        print("1. Resolver Ax=b por Eliminación de Gauss")
-        print("2. Analizar A por Faddeev-Leverrier")
+        print("1. Metodo de Eliminación de Gauss")
+        print("2. Metodo de Fadeev Leverrier")
         print("3. Salir")
         opcion = input("Elegí una opción: ").strip()
         if opcion == "1":

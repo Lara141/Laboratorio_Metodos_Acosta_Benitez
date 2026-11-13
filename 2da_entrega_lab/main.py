@@ -1,7 +1,7 @@
 import time
 import numpy as np
 from entrada import ingresar_sistema, leer_float, leer_opcion_sn, leer_opcion_menu
-from fadeev_leverrier import calcular_faddeev, calcular_autovector
+from fadeev_leverrier import calcular_fadeev, calcular_autovector
 from descartes import analisis_descartes
 from biseccion import evaluar_polinomio, ejecutar_biseccion
 from trapecios import ejecutar_trapecios
@@ -104,12 +104,12 @@ def busqueda_autovalores(coeficientes, n):
     raices_encontradas.sort()
     return raices_encontradas
 
-def ejecutar_flujo_faddeev():
+def ejecutar_flujo_fadeev():
     A = ingresar_sistema()
     n = A.shape[0]
     inicio = time.perf_counter()
     
-    b_k_list, coeficientes, polinomio_str = calcular_faddeev(A)
+    b_k_list, coeficientes, polinomio_str = calcular_fadeev(A)
     
     autovalores_reales = []
     if leer_opcion_sn("\n¿Querés buscar los autovalores? (s/n): ") == 's':
@@ -158,7 +158,7 @@ def ejecutar_flujo_faddeev():
     fin = time.perf_counter()
     
    
-    print("RESUMEN FINAL DE FADDEEV-LEVERRIER")
+    print("RESULTADOS FINALES")
     print("-"*50)
     print("Valores b_k calculados:")
     for i, b in enumerate(b_k_list, 1):
@@ -196,14 +196,14 @@ def main():
      
         print(" MENÚ PRINCIPAL ".center(40, "*"))
         print("\n")
-        print("1. Resolver un problema con Faddeev-Leverrier")
+        print("1. Resolver un problema con Fadeev Leverrier")
         print("2. Resolver un problema con trapecios")
         print("3. Salir")
         
         opcion = leer_opcion_menu("\nElegí una opción: ", ['1', '2', '3'])
         
         if opcion == "1":
-            ejecutar_flujo_faddeev()
+            ejecutar_flujo_fadeev()
         elif opcion == "2":
             ejecutar_trapecios()
         elif opcion == "3":

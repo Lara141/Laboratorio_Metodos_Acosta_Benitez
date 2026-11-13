@@ -199,10 +199,11 @@ def ejecutar_flujo_fadeev():
 def main():
 #Menu principal de la segunda entrega de laboratorio
     while True:
-     
-        print(" MENÚ PRINCIPAL ".center(40, "*"))
+
         print("\n")
-        print("1. Resolver un problema con Fadeev Leverrier")
+        print(" MENÚ PRINCIPAL ".center(40, "*"))
+       # print("\n")
+        print("1. Resolver un problema con Fadeev-Leverrier")
         print("2. Resolver un problema con trapecios")
         print("3. Salir")
         

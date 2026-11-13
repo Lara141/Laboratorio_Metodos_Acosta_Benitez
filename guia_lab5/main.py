@@ -1,3 +1,9 @@
+"""Programa principal de interpolación polinómica con Lagrange.
+
+Permite evaluar una interpolación directa, construir el polinomio interpolante
+calculado con el método de Lagrange y comparar su precisión para distintos grados.
+"""
+
 from time import perf_counter
 from entrada import leer_float, leer_grado, leer_puntos
 from lagrange import ErrorInterpolacion, evaluar_lagrange, polinomio_lagrange, seleccionar_nodos
@@ -6,17 +12,20 @@ from lagrange import ErrorInterpolacion, evaluar_lagrange, polinomio_lagrange, s
 # Presentación de resultados
 # Imprime un encabezado numerado para organizar la salida en pantalla.
 def seccion(numero, titulo):
+    """Muestra un encabezado numerado para cada sección del programa."""
     print(f"\n{numero}. {titulo}")
     print("-" * 58)
 
 # Presenta en forma de tabla los valores X e Y de los nodos seleccionados.
 def mostrar_nodos(x, y):
+    """Imprime una tabla con los nodos usados en la interpolación."""
     print(f"{'i':>3} {'xi':>18} {'yi':>18}")
     for i, (xi, yi) in enumerate(zip(x, y)):
         print(f"{i:>3} {xi:>18.10g} {yi:>18.10g}")
 
 # Muestra cada base de Lagrange, su contribución y la suma que da el resultado.
 def mostrar_desarrollo(pasos, terminos, grado, x0, resultado, inicio=3):
+    """Despliega cada término de Lagrange y el valor total aproximado."""
     seccion(inicio, "DESARROLLO DE LOS TERMINOS")
     for paso in pasos:
         i = paso["indice"]
@@ -31,6 +40,7 @@ def mostrar_desarrollo(pasos, terminos, grado, x0, resultado, inicio=3):
 
 # Solicita un valor conocido opcional para calcular los errores de interpolación.
 def leer_referencia():
+    """Pregunta por un valor real de referencia para comparar el error."""
     while True:
         texto = input("Valor real/conocido para comparar (Enter si no se conoce): ").strip()
         if not texto:
@@ -46,6 +56,7 @@ def leer_referencia():
 
 # Calcula e imprime los errores absoluto, relativo y porcentual.
 def mostrar_errores(real, aproximado):
+    """Muestra los errores absoluto, relativo y porcentual entre dos valores."""
     absoluto = abs(real - aproximado)
     print(f"Valor de referencia: {real:.12g}")
     print(f"Error absoluto: {absoluto:.12g}")
@@ -60,6 +71,7 @@ def mostrar_errores(real, aproximado):
 # Gestión de datos compartidos
 # Valida una respuesta de sí/no y devuelve True o False.
 def confirmar(mensaje):
+    """Solicita una confirmación tipo sí/no y devuelve un valor booleano."""
     while True:
         respuesta = input(mensaje).strip().lower()
         if respuesta in ("s", "si", "sí"):
@@ -70,6 +82,7 @@ def confirmar(mensaje):
 
 # Permite reutilizar los puntos guardados o ingresar una nueva tabla.
 def obtener_datos(datos, minimo=2):
+    """Reutiliza datos ya cargados o pide una nueva tabla si hace falta."""
     """Reutiliza los datos existentes o solicita una tabla nueva."""
     if datos is not None and len(datos[0]) >= minimo:
         print(f"\nHay {len(datos[0])} pares de datos guardados.")
@@ -81,10 +94,12 @@ def obtener_datos(datos, minimo=2):
 
 
 def repetir_calculo():
+    """Pregunta si se desea repetir la interpolación con el mismo conjunto de datos."""
     return confirmar("\n¿Deseás interpolar otro valor de X con los mismos datos? (S/N): ")
 
 # Opción 1: selecciona nodos, evalúa Lagrange y presenta los cálculos y errores.
 def interpolacion_directa(x, y):
+    """Ejecuta la interpolación directa con Lagrange y muestra el cálculo completo."""
     while True:
         print("\nINTERPOLACION DIRECTA DE LAGRANGE")
         x0 = leer_float("Valor de X a interpolar: ")
@@ -115,6 +130,7 @@ def interpolacion_directa(x, y):
 # Opción 2: construcción y evaluación del polinomio
 # Convierte los coeficientes del polinomio en una expresión legible de P(x).
 def formatear_polinomio(coeficientes):
+    """Formatea los coeficientes del polinomio para mostrarlo como expresión algebraica."""
     partes = []
     for grado, coef in enumerate(coeficientes):
         if abs(coef) < 1e-12:
@@ -131,6 +147,7 @@ def formatear_polinomio(coeficientes):
     return "P(x) = " + salida
 
 def mostrar_polinomio(x, y):
+    """Muestra el polinomio interpolante y lo evalúa en un punto dado."""
     while True:
         print("\nPOLINOMIO INTERPOLANTE DE LAGRANGE")
         x0 = leer_float("Valor de X donde se evaluara el polinomio: ")
@@ -159,6 +176,7 @@ def mostrar_polinomio(x, y):
 
 # Opción 3:comparación de aproximaciones y análisis de errores
 def analisis_errores(x, y):
+    """Compara interpolaciones de distintos grados y analiza sus errores."""
     while True:
         print("\nANALISIS DE ERRORES DE LAGRANGE")
         x0 = leer_float("Valor de X a interpolar: ")
@@ -199,6 +217,7 @@ def analisis_errores(x, y):
 
 # --- Menú principal ---
 def main():
+    """Controla el menú principal del laboratorio de interpolación."""
     datos = None
     while True:
         print("\n MENU ")

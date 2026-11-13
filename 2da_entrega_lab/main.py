@@ -1,3 +1,6 @@
+#Programa principal de la segunda entrega del laboratorio.
+#Integra distintos métodos numéricos: análisis de signos de Descartes, búsqueda de
+#raíces por tanteo y bisección, cálculo de autovalores y resolución de integrales.
 import time
 import numpy as np
 from entrada import ingresar_sistema, leer_float, leer_opcion_sn, leer_opcion_menu
@@ -7,6 +10,7 @@ from biseccion import evaluar_polinomio, ejecutar_biseccion
 from trapecios import ejecutar_trapecios
 
 def busqueda_autovalores(coeficientes, n):
+#Busca raíces reales de un polinomio usando Descartes y bisección.
     max_pos, max_neg = analisis_descartes(coeficientes)
     raices_encontradas = []
     
@@ -105,6 +109,7 @@ def busqueda_autovalores(coeficientes, n):
     return raices_encontradas
 
 def ejecutar_flujo_fadeev():
+#Ejecuta el flujo completo del método de Fadeev Leverrier
     A = ingresar_sistema()
     n = A.shape[0]
     inicio = time.perf_counter()
@@ -192,6 +197,7 @@ def ejecutar_flujo_fadeev():
     input("\nPresioná Enter para volver al menú principal...")
 
 def main():
+#Menu principal de la segunda entrega de laboratorio
     while True:
      
         print(" MENÚ PRINCIPAL ".center(40, "*"))

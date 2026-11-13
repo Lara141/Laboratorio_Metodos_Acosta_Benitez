@@ -1,3 +1,9 @@
+"""Interpolación polinómica mediante la fórmula de Lagrange.
+
+Este módulo valida nodos, selecciona los más apropiados para un objetivo dado,
+calcula el valor interpolado y construye el polinomio interpolante asociado.
+"""
+
 import math
 import numpy as np
 from numpy.polynomial import Polynomial
@@ -11,6 +17,7 @@ class ErrorInterpolacion(ValueError):
 # Validación de nodos y valores
 # Convierte los datos a arreglos y valida tamaño, finitud y unicidad.
 def _validar_datos(nodos, valores):
+    """Valida que los nodos y valores sean finitos y consistentes entre sí."""
     x = np.asarray(nodos, dtype=float).reshape(-1)
     y = np.asarray(valores, dtype=float).reshape(-1)
     if x.size != y.size or x.size == 0:
@@ -24,6 +31,7 @@ def _validar_datos(nodos, valores):
 
 # Selección de nodos cercanos al objetivo 
 def seleccionar_nodos(nodos, valores, objetivo, grado):
+    """Selecciona los nodos más cercanos al punto objetivo para la interpolación."""
     x, y = _validar_datos(nodos, valores)
     if not isinstance(grado, (int, np.integer)) or not 0 <= grado < x.size:
         raise ErrorInterpolacion("El grado debe estar entre 0 y cantidad de puntos - 1.")
@@ -40,6 +48,7 @@ def seleccionar_nodos(nodos, valores, objetivo, grado):
 
 # Evaluación numérica del interpolante
 def evaluar_lagrange(nodos, valores, objetivo):
+    """Evalúa el interpolante de Lagrange en un valor objetivo."""
     x, y = _validar_datos(nodos, valores)
     objetivo = float(objetivo)
     if not math.isfinite(objetivo):

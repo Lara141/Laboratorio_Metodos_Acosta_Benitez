@@ -1,3 +1,10 @@
+"""Implementación de la regla de los trapecios para integración numérica.
+
+El módulo valida que los puntos estén equiespaciados y calcula la integral
+aproximada de una función tabulada usando la fórmula compuesta del trapecio.
+"""
+
+
 def verificar_equidistancia(x, tolerancia=1e-9):
     """
     Verifica que todos los subintervalos tengan
@@ -29,6 +36,7 @@ def verificar_equidistancia(x, tolerancia=1e-9):
 
 
 def calcular_sumatorias(y):
+    """Calcula las sumatorias de extremos e interiores utilizada por la fórmula."""
     """
     Calcula las sumatorias E, P e I y guarda
     los valores utilizados en cada una.
@@ -53,6 +61,7 @@ def calcular_sumatorias(y):
 
  
 def metodo_trapecios(x, y):
+    """Aplíca la regla compuesta de los trapecios sobre una tabla de datos."""
     """
     Aplica el metodo compuesto de Trapecios
     utilizando la formula de la catedra:
@@ -93,6 +102,7 @@ def metodo_trapecios(x, y):
 
 
 def generar_datos_funcion(expresion, a, b, n):
+    """Genera valores (x, y) a partir de una función analítica ingresada por el usuario."""
     """
     Genera los valores X e Y a partir de una
     funcion matematica ingresada por el usuario.

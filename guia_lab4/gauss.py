@@ -1,13 +1,39 @@
+"""Resolución numérica de sistemas lineales por eliminación de Gauss.
+
+Este módulo implementa una versión didáctica del método de Gauss con pivoteo
+parcial para detectar sistemas singulares y mostrar el proceso paso a paso.
+"""
+
 from __future__ import annotations
 
 import numpy as np
 
 
 class SistemaSingularError(ValueError):
-    """El sistema no tiene una solución única numéricamente confiable."""
+    """Se lanza cuando el sistema no tiene solución única o es casi singular.
+
+    Esto ocurre cuando un pivote resulta nulo o demasiado pequeño para realizar
+    una división estable durante la eliminación gaussiana.
+    """
 
 
 def eliminacion_gauss(A, b, tolerancia: float = 1e-12, cifras_significativas: int | None = None):
+    """Resuelve un sistema cuadrado Ax = b mediante eliminación de Gauss.
+
+    Args:
+        A: Matriz de coeficientes cuadrada.
+        b: Vector de términos independientes.
+        tolerancia: Umbral mínimo para evaluar si un pivote es casi nulo.
+        cifras_significativas: Cantidad máxima de cifras significativas para
+            redondear en los cálculos intermedios. Si es None, no se redondea.
+
+    Returns:
+        Una tupla (x, matriz_ampliada) con la solución x y la matriz reducida.
+
+    Raises:
+        ValueError: Si la entrada no es válida.
+        SistemaSingularError: Si el sistema es singular.
+    """
     A = np.array(A, dtype=float, copy=True)
     b = np.array(b, dtype=float, copy=True).reshape(-1)
     if A.ndim != 2 or A.shape[0] != A.shape[1]:
@@ -21,6 +47,7 @@ def eliminacion_gauss(A, b, tolerancia: float = 1e-12, cifras_significativas: in
         raise ValueError("Las cifras significativas deben ser un entero positivo.")
 
     def redondear(valor):
+        """Aplica una reducción de cifras significativas cuando se solicita."""
         if cifras_significativas is None or valor == 0:
             resultado = float(valor)
         else:
@@ -35,7 +62,7 @@ def eliminacion_gauss(A, b, tolerancia: float = 1e-12, cifras_significativas: in
         return f"{valor:.15g}"
 
     def matriz_a_texto(matriz, precision=6):
-        """Formatea matrices y normaliza ceros que quedarían como -0.000000."""
+        """Formatea matrices para su visualización y limpia valores cercanos a cero."""
         matriz = np.array(matriz, dtype=float, copy=True)
         umbral_visual = 0.5 * 10 ** (-precision)
         matriz[np.abs(matriz) <= umbral_visual] = 0.0
@@ -124,7 +151,7 @@ def eliminacion_gauss(A, b, tolerancia: float = 1e-12, cifras_significativas: in
             valor_producto = redondear(aumentada[fila, j] * x[j])
             resto = redondear(resto + valor_producto)
             terminos_str.append(f"({formatear_numero(redondear(aumentada[fila, j]))} * {formatear_numero(redondear(x[j]))})")
-        
+         
         x[fila] = redondear((aumentada[fila, n] - resto) / aumentada[fila, fila])
         
         lado_izquierdo = f"x{fila + 1}"

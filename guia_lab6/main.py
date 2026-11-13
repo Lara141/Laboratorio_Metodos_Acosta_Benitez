@@ -1,8 +1,15 @@
+"""Programa principal del laboratorio de integración numérica por trapecios.
+
+Permite ingresar datos tabulados, calcular la integral con la regla de los
+trapecios y mostrar el procedimiento de suma y evaluación paso a paso.
+"""
+
 from trapecios import metodo_trapecios
 from time import perf_counter
 
 
 def ingresar_datos():
+    """Solicita los valores x, y para la tabla de integración."""
     """
     Solicita los valores X e Y de la tabla.
     """
@@ -30,6 +37,7 @@ def ingresar_datos():
 
 
 def mostrar_tabla(x, y):
+    """Imprime la tabla de valores x e y usados para la integración."""
     """
     Muestra los valores utilizados en el calculo.
     """
@@ -43,6 +51,7 @@ def mostrar_tabla(x, y):
 
 
 def mostrar_sumatoria(nombre, valores, resultado):
+    """Muestra una sumatoria y su resultado parcial para la fórmula de trapecios."""
     """
     Muestra los terminos que forman una sumatoria
     y su resultado.
@@ -60,6 +69,7 @@ def mostrar_sumatoria(nombre, valores, resultado):
 
 
 def mostrar_resultados(x, y):
+    """Calcula y presenta la integral aplicada a la tabla de datos ingresada."""
     """
     Presenta la tabla, las sumatorias,
     la sustitucion y el resultado final.
@@ -121,6 +131,7 @@ def mostrar_resultados(x, y):
 
 
 def mostrar_menu():
+    """Muestra el menú principal del programa."""
     """
     Muestra las opciones disponibles.
     """
@@ -134,6 +145,7 @@ def mostrar_menu():
 
 
 def main():
+    """Controla el flujo principal del programa de integración."""
     """
     Controla el menu y permite reutilizar
     los datos ingresados anteriormente.

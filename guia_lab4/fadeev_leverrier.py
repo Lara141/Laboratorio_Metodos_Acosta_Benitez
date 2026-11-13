@@ -1,9 +1,26 @@
+"""Determinación de autovalores y autovectores por Fadeev-LeVerrier.
+
+El algoritmo calcula los coeficientes del polinomio característico usando trazas
+sucesivas de matrices auxiliares y luego resuelve sus raíces para encontrar los
+autovalores de la matriz original.
+"""
+
 from __future__ import annotations
 
 import numpy as np
 
 
 def fadeev_leverrier(A, tolerancia: float = 1e-10):
+    """Calcula autovalores, autovectores, determinante e inversa aproximada.
+
+    Args:
+        A: Matriz cuadrada sobre la cual se desea hallar el espectro.
+        tolerancia: Umbral para considerar valores casi nulos.
+
+    Returns:
+        Diccionario con coeficientes, autovalores, autovectores, residuos,
+        inversa y determinante.
+    """
     A = np.array(A, dtype=float, copy=True)
     if A.ndim != 2 or A.shape[0] != A.shape[1]:
         raise ValueError("La matriz A debe ser cuadrada para hallar autovalores.")
@@ -14,6 +31,7 @@ def fadeev_leverrier(A, tolerancia: float = 1e-10):
     identidad = np.eye(n)
     
     def fmt(val):
+        """Formatea un número real o complejo para mostrarlo de forma legible."""
         if isinstance(val, (complex, np.complex128, np.complex64)):
             if abs(val.imag) < 1e-10:
                 parte_real = 0.0 if val.real == 0 else val.real
@@ -26,6 +44,7 @@ def fadeev_leverrier(A, tolerancia: float = 1e-10):
         return f"{val:g}"
 
     def array2string_limpia(valores, precision=4):
+        """Imprime un vector o matriz con valores complejos y reales limpios."""
         arreglo = np.real_if_close(np.asarray(valores), tol=1000)
         arreglo = np.array(arreglo, copy=True)
         umbral = 0.5 * 10 ** (-precision)
@@ -201,7 +220,7 @@ def fadeev_leverrier(A, tolerancia: float = 1e-10):
                 vector_svd = vector_svd.real.astype(complex)
             autovectores[:, j] = vector_svd
         residuos[j] = float(np.linalg.norm(A @ vector_svd - valor * vector_svd))
-
+ 
     determinante = float(np.linalg.det(A))
     inversa = None
     if abs(determinante) > tolerancia:

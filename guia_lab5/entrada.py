@@ -1,8 +1,15 @@
+"""Entrada y validación de datos para la interpolación polinómica.
+
+Este módulo facilita la lectura de puntos, grados del polinomio y valores reales,
+validando que la información ingresada sea consistente con el problema planteado.
+"""
+
 import math
 
 
 #Lectura y validación de valores individuales
 def leer_entero(mensaje, minimo=1):
+    """Lee un entero con un mínimo permitido."""
     while True:
         try:
             valor = int(input(mensaje))
@@ -14,6 +21,7 @@ def leer_entero(mensaje, minimo=1):
 
 
 def leer_float(mensaje):
+    """Lee un número real finito desde la entrada estándar."""
     while True:
         try:
             valor = float(input(mensaje).strip().replace(",", "."))
@@ -26,6 +34,7 @@ def leer_float(mensaje):
 
 #Lectura de datos para el problema
 def leer_puntos(minimo=2):
+    """Solicita una tabla de puntos (x, y) con cantidad mínima dada."""
     cantidad = leer_entero(f"Cantidad de pares de datos (mínimo {minimo}): ", minimo)
     x, y = [], []
     for i in range(cantidad):
@@ -48,6 +57,7 @@ def leer_puntos(minimo=2):
  
 
 def leer_grado(cantidad):
+    """Pide el grado de interpolación según la cantidad de puntos disponibles."""
     maximo = cantidad - 1
     while True:
         texto = input(

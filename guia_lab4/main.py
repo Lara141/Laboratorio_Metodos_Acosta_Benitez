@@ -1,3 +1,9 @@
+"""Programa principal del laboratorio de métodos numéricos.
+
+Permite resolver sistemas lineales con eliminación de Gauss y analizar matrices
+mediante el método de Fadeev-LeVerrier.
+"""
+
 from __future__ import annotations
 
 import time
@@ -7,7 +13,9 @@ from entrada import leer_entero_positivo, leer_matriz, leer_vector, imprimir_vec
 from gauss import eliminacion_gauss, SistemaSingularError
 from fadeev_leverrier import fadeev_leverrier
 
+
 def ejecutar_gauss():
+    """Ejecuta la resolución de un sistema lineal por eliminación de Gauss."""
     print("\n Eliminación de Gauss")
     n = leer_entero_positivo("Cantidad de ecuaciones/incógnitas: ")
     A = leer_matriz(n, "A")
@@ -48,6 +56,7 @@ def ejecutar_gauss():
 
 
 def ejecutar_fadeev():
+    """Ejecuta el cálculo de autovalores y autovectores con Fadeev-LeVerrier."""
     print("\n Fadeev Leverrier")
     n = leer_entero_positivo("Orden de la matriz cuadrada A: ")
     A = leer_matriz(n, "A")
@@ -82,6 +91,7 @@ def ejecutar_fadeev():
 
 
 def main():
+    """Muestra el menú principal y ejecuta la opción elegida por el usuario."""
     while True:
         print("\n MENU")
         print("1. Metodo de Eliminación de Gauss")
@@ -97,7 +107,7 @@ def main():
             break
         else:
             print("Opción inválida. Elegí 1, 2 o 3.")
-
+ 
 
 if __name__ == "__main__":
     main()

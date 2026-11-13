@@ -12,7 +12,6 @@ def contar_cambios_signo(coeficientes):
     return cambios
 
 def analisis_descartes(coeficientes):
-    # coeficientes vienen en orden: [a_n, a_{n-1}, ..., a_0]
     n = len(coeficientes) - 1
     
     print("\n" + "="*50)
@@ -22,9 +21,7 @@ def analisis_descartes(coeficientes):
     # Raíces positivas p(λ)
     cambios_pos = contar_cambios_signo(coeficientes)
     print("Análisis para raíces positivas p(λ):")
-    print(f"Coeficientes: {[round(c, 4) for c in coeficientes]}")
-    print(f"Cambios de signo encontrados: {cambios_pos}")
-    print(f"-> Podría haber hasta {cambios_pos} raíz/raíces real(es) positiva(s).")
+    print(f"-> Según los cambios de signo en p(λ), podría haber hasta {cambios_pos} raíz/raíces real(es) positiva(s).")
     
     # Raíces negativas p(-λ)
     coef_neg = []
@@ -37,8 +34,8 @@ def analisis_descartes(coeficientes):
             
     cambios_neg = contar_cambios_signo(coef_neg)
     print("\nAnálisis para raíces negativas p(-λ):")
-    print(f"Coeficientes de p(-λ): {[round(c, 4) for c in coef_neg]}")
-    print(f"Cambios de signo encontrados: {cambios_neg}")
-    print(f"-> Podría haber hasta {cambios_neg} raíz/raíces real(es) negativa(s).")
+    print(f"-> Según los cambios de signo en p(-λ), podría haber hasta {cambios_neg} raíz/raíces real(es) negativa(s).")
     
-    print("\nNota: La regla de Descartes indica una cantidad máxima posible de raíces reales, no la cantidad exacta. Si el polinomio tiene autovalores complejos, estos métodos no los detectarán.")
+    print("\nNota: Descartes indica una cantidad máxima posible de raíces reales, no la cantidad exacta. Las raíces pueden ser menos si existen raíces complejas o de multiplicidad par.")
+    
+    return cambios_pos, cambios_neg

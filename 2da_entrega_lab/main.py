@@ -1,122 +1,162 @@
 import time
 import numpy as np
-from entrada import ingresar_sistema
+from entrada import ingresar_sistema, leer_float, leer_opcion_sn, leer_opcion_menu
 from fadeev_leverrier import calcular_faddeev, calcular_autovector
 from descartes import analisis_descartes
 from biseccion import evaluar_polinomio, ejecutar_biseccion
-from trapecios import ejecutar_trapecios
+from trapecios import metodo_trapecios
 
-def busqueda_autovalores(coeficientes):
-    analisis_descartes(coeficientes)
-    
+def busqueda_autovalores(coeficientes, n):
+    max_pos, max_neg = analisis_descartes(coeficientes)
     raices_encontradas = []
     
+    busco_negativos = False
+    busco_positivos = False
+
     while True:
-        resp = input("\n¿Querés tantear raíces en un intervalo? (s/n): ").strip().lower()
+        pendientes_pos = len([r for r in raices_encontradas if r > 0]) < max_pos
+        pendientes_neg = len([r for r in raices_encontradas if r < 0]) < max_neg
+
+        # Mensaje predeterminado
+        mensaje_tanteo = "\n¿Querés tantear raíces reales en un intervalo? (s/n): "
+        
+        # Ajuste dinámico de los mensajes luego de haber realizado al menos un tanteo
+        if busco_positivos or busco_negativos:
+            if not pendientes_pos and max_pos > 0 and pendientes_neg and max_neg > 0:
+                mensaje_tanteo = "\nSe encontraron los autovalores positivos, pero todavía faltan buscar los negativos. ¿Desea aplicar tanteo para buscarlos? (s/n): "
+            elif not pendientes_neg and max_neg > 0 and pendientes_pos and max_pos > 0:
+                mensaje_tanteo = "\nSe encontraron los autovalores negativos, pero todavía faltan buscar los positivos. ¿Desea aplicar tanteo para buscarlos? (s/n): "
+            elif not pendientes_pos and not pendientes_neg:
+                mensaje_tanteo = "\nYa se encontraron todos los autovalores reales posibles según Descartes. ¿Querés realizar un nuevo tanteo de todas formas? (s/n): "
+
+        resp = leer_opcion_sn(mensaje_tanteo)
         if resp != 's':
             break
             
-        try:
-            inicio = float(input("Valor inicial del tanteo: ").replace(",", "."))
-            fin = float(input("Valor final del tanteo: ").replace(",", "."))
-            paso = float(input("Incremento: ").replace(",", "."))
+        inicio = leer_float("Valor inicial del tanteo: ")
+        fin = leer_float("Valor final del tanteo: ")
+        paso = leer_float("Incremento: ")
+        
+        if inicio >= fin or paso <= 0:
+            print("Error: El valor inicial debe ser menor al final y el incremento debe ser mayor a cero.")
+            continue
             
-            if inicio >= fin or paso <= 0:
-                print("Intervalo o incremento inválido.")
+        if inicio < 0 or fin < 0: busco_negativos = True
+        if inicio > 0 or fin > 0: busco_positivos = True
+            
+        print("\nResultados del tanteo:")
+        print(f"{'λ':<10} | {'p(λ)':<12}")
+        print("-" * 25)
+        
+        valores = np.arange(inicio, fin + paso, paso)
+        prev_y = None
+        prev_x = None
+        
+        intervalos_cambio = []
+        
+        for x in valores:
+            y = evaluar_polinomio(coeficientes, x)
+            print(f"{x:<10.4g} | {y:<12.4g}")
+            
+            if abs(y) < 1e-10:
+                raiz_nativa = float(x)
+                if not any(abs(raiz_nativa - r) < 1e-3 for r in raices_encontradas):
+                    print(f"*** Raíz exacta encontrada en λ = {raiz_nativa:.4g} ***")
+                    raices_encontradas.append(raiz_nativa)
+                    
+            if prev_y is not None and abs(y) >= 1e-10 and np.sign(y) != np.sign(prev_y):
+                intervalos_cambio.append((float(prev_x), float(x)))
+                
+            prev_x = x
+            prev_y = y
+            
+        pos_halladas = len([r for r in raices_encontradas if r > 0])
+        neg_halladas = len([r for r in raices_encontradas if r < 0])
+        
+        for a, b in intervalos_cambio:
+            es_positivo = a >= 0 and b > 0
+            
+            if es_positivo and pos_halladas >= max_pos:
+                continue
+            if not es_positivo and neg_halladas >= max_neg:
                 continue
                 
-            print("\nResultados del tanteo:")
-            print(f"{'λ':<10} | {'p(λ)':<12}")
-            print("-" * 25)
+            acc = leer_opcion_sn(f"\nPara el intervalo con cambio de signo [{a:.4g}, {b:.4g}], ¿querés aplicar bisección? (s/n): ")
+            if acc == 's':
+                raiz = ejecutar_biseccion(coeficientes)
+                if raiz is not None:
+                    raiz_nativa = float(raiz)
+                    if not any(abs(raiz_nativa - r) < 1e-3 for r in raices_encontradas):
+                        raices_encontradas.append(raiz_nativa)
+                        if raiz_nativa > 0: pos_halladas += 1
+                        else: neg_halladas += 1
+                    else:
+                        print("Esta raíz ya estaba en la lista.")
+
+        faltan_pos = pos_halladas < max_pos
+        faltan_neg = neg_halladas < max_neg
+        
+        if (faltan_pos or faltan_neg) and not intervalos_cambio:
+            print("\nNo se detectaron intervalos con cambio de signo en este tanteo, pero Descartes indica que podrían existir más raíces.")
+            print("Esto puede ocurrir porque el intervalo es incorrecto, el incremento es muy grande, o las raíces son repetidas/complejas.")
+            print("Podés intentar repetir el tanteo con otros valores o un incremento menor.")
             
-            valores = np.arange(inicio, fin + paso, paso)
-            prev_y = None
-            prev_x = None
-            
-            intervalos_cambio = []
-            
-            for x in valores:
-                y = evaluar_polinomio(coeficientes, x)
-                print(f"{x:<10.4g} | {y:<12.4g}")
-                
-                # Raíz exacta detectada
-                if abs(y) < 1e-10:
-                    print(f"*** Raíz exacta encontrada en λ = {x} ***")
-                    if not any(abs(x - r) < 1e-3 for r in raices_encontradas):
-                        raices_encontradas.append(x)
-                        
-                # Cambio de signo
-                if prev_y is not None and abs(y) >= 1e-10 and np.sign(y) != np.sign(prev_y):
-                    intervalos_cambio.append((prev_x, x))
-                    
-                prev_x = x
-                prev_y = y
-                
-            if intervalos_cambio:
-                print("\nSe detectaron cambios de signo en los siguientes intervalos:")
-                for a, b in intervalos_cambio:
-                    print(f"[{a:.4g}, {b:.4g}]")
-                    
-                for a, b in intervalos_cambio:
-                    acc = input(f"\nPara el intervalo [{a:.4g}, {b:.4g}], ¿querés aplicar bisección? (s/n): ").strip().lower()
-                    if acc == 's':
-                        raiz = ejecutar_biseccion(coeficientes)
-                        if raiz is not None:
-                            # Evitar duplicados
-                            if not any(abs(raiz - r) < 1e-3 for r in raices_encontradas):
-                                raices_encontradas.append(raiz)
-                            else:
-                                print("Esta raíz ya estaba en la lista de encontradas.")
-                                
-        except ValueError:
-            print("Por favor, ingresá valores numéricos válidos.")
-            
+    raices_encontradas.sort()
     return raices_encontradas
 
 def ejecutar_flujo_faddeev():
     A = ingresar_sistema()
+    n = A.shape[0]
     inicio = time.perf_counter()
     
-    # 1. Faddeev-Leverrier
     b_k_list, coeficientes, polinomio_str = calcular_faddeev(A)
     
-    # 2. Búsqueda de autovalores
     autovalores_reales = []
-    if input("\n¿Querés buscar los autovalores? (s/n): ").strip().lower() == 's':
-        autovalores_reales = busqueda_autovalores(coeficientes)
+    if leer_opcion_sn("\n¿Querés buscar los autovalores? (s/n): ") == 's':
+        autovalores_reales = busqueda_autovalores(coeficientes, n)
         
-    # 3. Autovectores
+    raices_extra = []
+    if len(autovalores_reales) < n:
+        faltantes = n - len(autovalores_reales)
+        print(f"\n¡Atención! La matriz es de orden {n}, por lo que el polinomio debe tener {n} raíces en total.")
+        print(f"Se encontraron {len(autovalores_reales)} raíces mediante tanteo y bisección. Faltan {faltantes} raíces.")
+        print("Estas raíces faltantes podrían ser autovalores múltiples (repetidos) o complejos (imaginarios), los cuales no se pueden detectar con bisección.")
+        
+        if leer_opcion_sn("¿Deseas calcular las raíces faltantes utilizando un método analítico automatizado? (s/n): ") == 's':
+            todas_las_raices = np.roots(coeficientes)
+            for r in todas_las_raices:
+                es_real = abs(r.imag) < 1e-10
+                r_val = float(r.real) if es_real else complex(r)
+                ya_encontrada = es_real and any(abs(r_val - real_r) < 1e-3 for real_r in autovalores_reales)
+                if not ya_encontrada:
+                    raices_extra.append(r_val)
+
     autovectores_calculados = []
     if autovalores_reales:
-        print("\nAutovalores reales encontrados:", [round(r, 6) for r in autovalores_reales])
+        print("\nAutovalores reales listos para procesar:", [round(r, 6) for r in autovalores_reales])
         print("\n¿Qué deseas hacer con los autovectores?")
-        print("1. Buscar los autovectores de TODOS los autovalores encontrados")
+        print("1. Buscar los autovectores de TODOS los autovalores reales")
         print("2. Buscar UN SOLO autovector")
-        print("3. Volver al menú principal")
+        print("3. Omitir y ver el resumen")
         
-        opc_vec = input("Elegí una opción: ").strip()
+        opc_vec = leer_opcion_menu("Elegí una opción: ", ['1', '2', '3'])
         if opc_vec == '1':
             for lambd in autovalores_reales:
                 v = calcular_autovector(A, lambd)
                 autovectores_calculados.append((lambd, v))
         elif opc_vec == '2':
-            try:
-                val = float(input("Ingresá el autovalor para calcular su autovector: ").replace(",", "."))
-                # Verificar si está en la lista (con tolerancia)
-                match = [r for r in autovalores_reales if abs(r - val) < 1e-3]
-                if match:
-                    lambd_real = match[0]
-                    print(f"Autovalor aceptado (aproximado a {lambd_real}).")
-                    v = calcular_autovector(A, lambd_real)
-                    autovectores_calculados.append((lambd_real, v))
-                else:
-                    print("El valor ingresado no coincide con ninguna de las raíces reales encontradas en este análisis.")
-            except ValueError:
-                print("Valor inválido.")
+            val = leer_float("Ingresá el autovalor para calcular su autovector: ")
+            match = [r for r in autovalores_reales if abs(r - val) < 1e-3]
+            if match:
+                lambd_real = match[0]
+                print(f"Autovalor aceptado (aproximado a {lambd_real}).")
+                v = calcular_autovector(A, lambd_real)
+                autovectores_calculados.append((lambd_real, v))
+            else:
+                print("El valor ingresado no coincide con ninguna de las raíces reales encontradas iterativamente.")
     
     fin = time.perf_counter()
     
-    # 4. Resumen final
     print("\n" + "="*50)
     print("RESUMEN FINAL DE FADDEEV-LEVERRIER")
     print("="*50)
@@ -126,19 +166,25 @@ def ejecutar_flujo_faddeev():
         
     print(f"\nPolinomio característico:\np(λ) = {polinomio_str} = 0")
     
-    print("\nAutovalores reales encontrados:")
+    print("\nAutovalores reales encontrados iterativamente:")
     if autovalores_reales:
-        for r in autovalores_reales:
-            print(f"λ = {r:.6g}")
+        for i, r in enumerate(autovalores_reales, 1):
+            print(f"λ{i} = {r:.6g}")
     else:
-        print("No se calcularon/encontraron autovalores reales en esta sesión.")
+        print("Ninguno.")
+
+    if raices_extra:
+        print("\nAutovalores complejos o de multiplicidad calculados de forma analítica:")
+        for i, r in enumerate(raices_extra, len(autovalores_reales) + 1):
+            if isinstance(r, complex):
+                print(f"λ{i} = {r.real:.6g} {'+' if r.imag >= 0 else '-'} {abs(r.imag):.6g}j  (Raíz compleja)")
+            else:
+                print(f"λ{i} = {r:.6g} (Raíz real múltiple)")
         
-    print("\nAclaración: Descartes, tanteo y bisección buscan únicamente raíces reales. Si el polinomio tiene raíces complejas, se requeriría un método numérico adicional (como Bairstow) para calcularlas.")
-    
     print("\nAutovectores calculados:")
     if autovectores_calculados:
         for lambd, v in autovectores_calculados:
-            print(f"Para λ = {lambd:.6g} -> v = {np.array2string(v, precision=4)}")
+            print(f"Para λ = {lambd:.6g} -> v = {np.array2string(v, precision=4, suppress_small=True)}")
     else:
         print("Ninguno.")
         
@@ -154,16 +200,15 @@ def main():
         print("2. Resolver un problema con trapecios")
         print("3. Salir")
         
-        opcion = input("\nElegí una opción: ").strip()
+        opcion = leer_opcion_menu("\nElegí una opción: ", ['1', '2', '3'])
+        
         if opcion == "1":
             ejecutar_flujo_faddeev()
         elif opcion == "2":
-            ejecutar_trapecios()
+            metodo_trapecios()
         elif opcion == "3":
             print("Fin del programa. ¡Éxitos con el proyecto!")
             break
-        else:
-            print("Opción inválida. Elegí 1, 2 o 3.")
 
 if __name__ == "__main__":
     main()

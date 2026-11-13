@@ -1,4 +1,5 @@
 import numpy as np
+from entrada import leer_float, leer_opcion_sn
 
 def evaluar_polinomio(coeficientes, x):
     return np.polyval(coeficientes, x)
@@ -6,24 +7,21 @@ def evaluar_polinomio(coeficientes, x):
 def ejecutar_biseccion(coeficientes):
     print("\n--- Método de Bisección ---")
     while True:
-        try:
-            a = float(input("Ingresá el extremo inicial del intervalo (a): ").replace(",", "."))
-            b = float(input("Ingresá el extremo final del intervalo (b): ").replace(",", "."))
-            if a >= b:
-                print("Error: 'a' debe ser menor que 'b'.")
-                continue
-            
-            fa = evaluar_polinomio(coeficientes, a)
-            fb = evaluar_polinomio(coeficientes, b)
-            
-            if fa * fb > 0:
-                print(f"Error: p(a) = {fa:.4g} y p(b) = {fb:.4g} tienen el mismo signo. No se cumple la condición del teorema de Bolzano para aplicar bisección.")
-                if input("¿Querés probar con otro intervalo? (s/n): ").strip().lower() != 's':
-                    return None
-                continue
-            break
-        except ValueError:
-            print("Entrada inválida. Ingresá números.")
+        a = leer_float("Ingresá el extremo inicial del intervalo (a): ")
+        b = leer_float("Ingresá el extremo final del intervalo (b): ")
+        if a >= b:
+            print("Error: 'a' debe ser menor estricto que 'b'.")
+            continue
+        
+        fa = evaluar_polinomio(coeficientes, a)
+        fb = evaluar_polinomio(coeficientes, b)
+        
+        if fa * fb > 0:
+            print(f"Error: p(a) = {fa:.4g} y p(b) = {fb:.4g} tienen el mismo signo. No se cumple la condición del teorema de Bolzano para aplicar bisección.")
+            if leer_opcion_sn("¿Querés probar con otro intervalo? (s/n): ") != 's':
+                return None
+            continue
+        break
             
     tol = 0.0001
     iteracion = 1

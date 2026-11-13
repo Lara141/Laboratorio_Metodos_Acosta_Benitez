@@ -3,12 +3,34 @@ import numpy as np
 def leer_entero_positivo(mensaje: str) -> int:
     while True:
         try:
-            valor = int(input(mensaje))
+            valor = int(input(mensaje).strip())
             if valor > 0:
                 return valor
             print("Error: Ingresá un número entero mayor que cero.")
         except ValueError:
-            print("Entrada inválida: ingresá un número entero.")
+            print("Error: Entrada inválida. Ingresá únicamente un número entero.")
+
+def leer_float(mensaje: str) -> float:
+    while True:
+        try:
+            entrada = input(mensaje).strip().replace(",", ".")
+            return float(entrada)
+        except ValueError:
+            print("Error: Entrada inválida. Ingresá únicamente números válidos.")
+
+def leer_opcion_sn(mensaje: str) -> str:
+    while True:
+        entrada = input(mensaje).strip().lower()
+        if entrada in ['s', 'n']:
+            return entrada
+        print("Error: Respuesta no válida. Ingresá únicamente 's' (sí) o 'n' (no).")
+
+def leer_opcion_menu(mensaje: str, opciones_validas: list) -> str:
+    while True:
+        entrada = input(mensaje).strip()
+        if entrada in opciones_validas:
+            return entrada
+        print(f"Error: Opción inválida. Elegí una de las opciones permitidas: {', '.join(opciones_validas)}.")
 
 def ingresar_sistema() -> np.ndarray:
     print("\n--- Ingreso de la Matriz del Sistema ---")
@@ -20,8 +42,6 @@ def ingresar_sistema() -> np.ndarray:
         print(f"Para cada fila, escribí {n} números separados por espacios (usá punto o coma para decimales).")
         
         filas = []
-        error_en_carga = False
-        
         for i in range(n):
             while True:
                 entrada = input(f"Fila {i + 1}: ").strip()
@@ -30,7 +50,6 @@ def ingresar_sistema() -> np.ndarray:
                     continue
                 
                 try:
-                    # Se reemplaza coma por punto y se convierte a float sin usar eval()
                     valores = [float(v.replace(",", ".")) for v in entrada.split()]
                     if len(valores) != n:
                         print(f"Error: Se esperaban {n} valores, pero ingresaste {len(valores)}. Volvé a ingresar la fila.")
@@ -45,11 +64,8 @@ def ingresar_sistema() -> np.ndarray:
         print("\nMatriz ingresada:")
         print(A)
         
-        opcion = input("\n¿Qué querés hacer?\n1. Aplicar Faddeev-Leverrier\n2. Volver a ingresar el sistema\nElegí una opción (1/2): ").strip()
+        opcion = leer_opcion_menu("\n¿Qué querés hacer?\n1. Aplicar Faddeev-Leverrier\n2. Volver a ingresar el sistema\nElegí una opción (1/2): ", ['1', '2'])
         if opcion == '1':
             return A
         elif opcion == '2':
             print("\nReiniciando la carga del sistema...")
-        else:
-            print("\nOpción no reconocida. Asumiendo que se desea continuar con Faddeev-Leverrier.")
-            return A

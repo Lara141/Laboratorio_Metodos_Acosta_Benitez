@@ -1,8 +1,3 @@
-
-# ==========================================================
-# METODO DE INTEGRACION NUMERICA: TRAPECIOS
-# ==========================================================
-
 def verificar_equidistancia(x, tolerancia=1e-9):
     """
     Verifica que todos los subintervalos tengan
@@ -56,7 +51,7 @@ def calcular_sumatorias(y):
     return E, P, I, valores_E, valores_P, valores_I
 
 
-
+ 
 def metodo_trapecios(x, y):
     """
     Aplica el metodo compuesto de Trapecios

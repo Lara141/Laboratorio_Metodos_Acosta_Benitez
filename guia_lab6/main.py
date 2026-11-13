@@ -1,6 +1,5 @@
-# LABORATORIO 6 - METODO DE TRAPECIOS
-
 from trapecios import metodo_trapecios
+from time import perf_counter
 
 
 def ingresar_datos():
@@ -17,7 +16,7 @@ def ingresar_datos():
 
     x = []
     y = []
-
+ 
 
     for i in range(cantidad):
         print(f"\nPunto {i}:")
@@ -66,7 +65,9 @@ def mostrar_resultados(x, y):
     la sustitucion y el resultado final.
     """
 
+    inicio = perf_counter()
     resultado = metodo_trapecios(x, y)
+    tiempo_ejecucion = perf_counter() - inicio
 
     mostrar_tabla(x, y)
 
@@ -116,6 +117,7 @@ def mostrar_resultados(x, y):
     print("\n" + "=" * 55)
     print(f"RESULTADO FINAL: A = {A:.8f}")
     print("=" * 55)
+    print(f"Tiempo de ejecución del método: {tiempo_ejecucion:.8f} segundos")
 
 
 def mostrar_menu():
@@ -123,9 +125,9 @@ def mostrar_menu():
     Muestra las opciones disponibles.
     """
 
-    print("\n" + "=" * 55)
-    print("                  METODO DE TRAPECIOS")
-    print("=" * 55)
+  
+    print("                 MENU")
+   
 
     print("1. Ingresar valores de X e Y")
     print("2. Salir")

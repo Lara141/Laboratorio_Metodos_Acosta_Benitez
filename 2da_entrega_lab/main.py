@@ -22,7 +22,7 @@ def busqueda_autovalores(coeficientes, n):
         pendientes_neg = len([r for r in raices_encontradas if r < 0]) < max_neg
 
         # Mensaje predeterminado
-        mensaje_tanteo = "\n¿Querés saber cuantos y de que tipo son los autovalores? (s/n): "
+        mensaje_tanteo = "\n¿Querés aplicar tanteo para encontrar los autovalores? (s/n): "
         
         # Ajuste dinámico de los mensajes luego de haber realizado al menos un tanteo
         if busco_positivos or busco_negativos:

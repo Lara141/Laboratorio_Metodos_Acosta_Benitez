@@ -111,7 +111,6 @@ def leer_numero(mensaje):
         except ValueError:
             print("Entrada inválida. Ingrese un número finito.")
 
-
 def leer_entero_positivo(mensaje):
     while True:
         texto = input(mensaje).strip()
@@ -145,21 +144,53 @@ def solicitar_datos():
         print("El tamaño de paso debe ser mayor que cero.")
         h = leer_numero("Tamaño de paso h: ")
 
-    x0 = leer_numero("Valor inicial x0: ")
-    x_iniciales = [x0 + i * h for i in range(4)]
-
-    print("\nMilne necesita cuatro valores iniciales de y, normalmente" )
+    print("\nMilne necesita cuatro valores iniciales (x, y), normalmente")
     print("obtenidos con Euler, Euler modificado o Runge-Kutta.")
-    y_iniciales = []
-    for i, xi in enumerate(x_iniciales):
-        yi = leer_numero(f"Ingrese y{i} para x{i} = {xi:.10g}: ")
-        y_iniciales.append(yi)
+    print("Se verificará que los 4 datos estén separados exactamente por h.")
 
-    pasos = leer_entero_positivo("Cantidad de pasos de Milne que desea calcular: ")
+    # Verificación de que los 4 datos iniciales son correctos (separados por h)
+    while True:
+        x_iniciales = []
+        y_iniciales = []
+        for i in range(4):
+            xi = leer_numero(f"Ingrese x{i}: ")
+            yi = leer_numero(f"Ingrese y{i}: ")
+            x_iniciales.append(xi)
+            y_iniciales.append(yi)
+        
+        datos_correctos = True
+        for i in range(1, 4):
+            diff = x_iniciales[i] - x_iniciales[i-1]
+            if not math.isclose(diff, h, rel_tol=1e-5, abs_tol=1e-8):
+                print(f"\nError: La distancia entre x{i-1} y x{i} es {diff:.6g}, pero h es {h}.")
+                datos_correctos = False
+                break
+        
+        if datos_correctos:
+            print("¡Los 4 datos iniciales son válidos y equiespaciados!\n")
+            break
+        else:
+            print("Por favor, ingrese los 4 datos iniciales nuevamente, respetando el tamaño de paso h.\n")
+
+    # Ingreso del valor a predecir
+    while True:
+        objetivo = input("¿Qué valor desea predecir? (ej. x4, x5): ").strip().lower()
+        if objetivo.startswith("x") and objetivo[1:].isdigit():
+            indice_objetivo = int(objetivo[1:])
+            if indice_objetivo < 4:
+                print("Error: El índice a predecir debe ser 4 o mayor (x0 a x3 ya son conocidos).")
+            else:
+                pasos = indice_objetivo - 3
+                break
+        else:
+            print("Formato inválido. Ingrese 'x' seguido de un número mayor o igual a 4 (ej. x4).")
+
     tolerancia = leer_numero("Tolerancia para las correcciones (debe ser positiva): ")
     while tolerancia <= 0:
         print("La tolerancia debe ser mayor que cero.")
         tolerancia = leer_numero("Tolerancia: ")
+
+    max_correcciones = leer_entero_positivo("Cantidad máxima de correcciones permitidas por paso: ")
 
     return {
         "expresion": expresion,
@@ -169,4 +200,5 @@ def solicitar_datos():
         "y_iniciales": y_iniciales,
         "pasos": pasos,
         "tolerancia": tolerancia,
+        "max_correcciones": max_correcciones,
     }

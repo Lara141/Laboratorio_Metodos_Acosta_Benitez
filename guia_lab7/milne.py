@@ -1,7 +1,7 @@
-"""Método predictor-corrector de Milne, con desarrollo paso a paso."""
+"""Método predictor-corrector de Milne, con desarrollo paso a paso y tiempo de ejecución."""
 
 import re
-
+import time
 
 def _fmt(valor):
     valor = float(valor)
@@ -19,12 +19,14 @@ def _mostrar_evaluacion(expresion, x, y, resultado, etiqueta):
     )
 
 
-def aplicar_milne(expresion, funcion, h, x_iniciales, y_iniciales, pasos, tolerancia):
+def aplicar_milne(expresion, funcion, h, x_iniciales, y_iniciales, pasos, tolerancia, max_correcciones):
     """Calcula los pasos solicitados y muestra las sustituciones del método."""
     if h <= 0 or tolerancia <= 0:
         raise ValueError("h y la tolerancia deben ser mayores que cero.")
     if len(x_iniciales) != 4 or len(y_iniciales) != 4:
         raise ValueError("El método de Milne necesita exactamente cuatro valores iniciales.")
+
+    tiempo_inicio = time.time()
 
     xs = list(x_iniciales)
     ys = list(y_iniciales)
@@ -36,6 +38,7 @@ def aplicar_milne(expresion, funcion, h, x_iniciales, y_iniciales, pasos, tolera
     print(f"Ecuación: y' = {expresion}")
     print(f"Tamaño de paso: h = {_fmt(h)}")
     print(f"Tolerancia para las correcciones: {_fmt(tolerancia)}")
+    print(f"Máximo de correcciones por paso: {max_correcciones}")
     print("\nValores iniciales proporcionados:")
     print(f"{'i':<5}{'x_i':<16}{'y_i':<18}f(x_i, y_i) = y'_i")
     print("-" * 68)
@@ -45,8 +48,6 @@ def aplicar_milne(expresion, funcion, h, x_iniciales, y_iniciales, pasos, tolera
         fs.append(derivada)
         print(f"{i:<5}{_fmt(xs[i]):<16}{_fmt(ys[i]):<18}{_fmt(derivada)}")
         _mostrar_evaluacion(expresion, xs[i], ys[i], derivada, f"f_{i}")
-
-    max_correcciones = 50
 
     for _ in range(pasos):
         n = len(xs) - 1
@@ -133,5 +134,12 @@ def aplicar_milne(expresion, funcion, h, x_iniciales, y_iniciales, pasos, tolera
     print("-" * 68)
     for i, (x, y, derivada) in enumerate(zip(xs, ys, fs)):
         print(f"{i:<5}{_fmt(x):<18}{_fmt(y):<20}{_fmt(derivada)}")
+
+    tiempo_fin = time.time()
+    tiempo_total = tiempo_fin - tiempo_inicio
+
+    print("-" * 68)
+    print(f"Tiempo de ejecución de Milne: {tiempo_total:.6f} segundos")
+    print("=" * 68)
 
     return xs, ys, fs

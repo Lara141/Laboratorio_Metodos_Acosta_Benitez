@@ -36,6 +36,5 @@ def analisis_descartes(coeficientes):
     print("\nAnálisis para raíces negativas p(-λ):")
     print(f" Según los cambios de signo en p(-λ), podría haber hasta {cambios_neg} raíz/raíces real(es) negativa(s).")
     
-    print("\nNota: Descartes indica una cantidad máxima posible de raíces reales, no la cantidad exacta. Las raíces pueden ser menos si existen raíces complejas o de multiplicidad par.")
     
     return cambios_pos, cambios_neg

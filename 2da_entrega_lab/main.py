@@ -33,9 +33,9 @@ def busqueda_autovalores(coeficientes, n):
         if resp != 's':
             break
             
-        inicio = leer_float("Valor inicial del tanteo: ")
-        fin = leer_float("Valor final del tanteo: ")
-        paso = leer_float("Incremento: ")
+        inicio = leer_float("Valor inicial del tanteo (-3): ")
+        fin = leer_float("Valor final del tanteo (5): ")
+        paso = leer_float("Incremento (1): ") 
         
         if inicio >= fin or paso <= 0:
             print("Error: El valor inicial debe ser menor al final y el incremento debe ser mayor a cero.")
@@ -207,7 +207,7 @@ def main():
         elif opcion == "2":
             ejecutar_trapecios()
         elif opcion == "3":
-            print("Fin del programa. ¡Éxitos con el proyecto!")
+            print("Fin del programa...")
             break
 
 if __name__ == "__main__":

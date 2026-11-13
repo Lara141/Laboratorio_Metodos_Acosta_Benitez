@@ -5,10 +5,8 @@ from milne import aplicar_milne
 
 
 def mostrar_menu():
-    print("\n" + "=" * 55)
-    print(" MÉTODO DE MILNE")
-    print("=" * 55)
-    print("1. Resolver una ecuación diferencial")
+    print(" MENU")
+    print("1. Metodo de Milne")
     print("2. Salir")
 
 

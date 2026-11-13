@@ -86,7 +86,7 @@ def repetir_calculo():
 # Opción 1: selecciona nodos, evalúa Lagrange y presenta los cálculos y errores.
 def interpolacion_directa(x, y):
     while True:
-        print("\n==== INTERPOLACION DIRECTA DE LAGRANGE ====")
+        print("\nINTERPOLACION DIRECTA DE LAGRANGE")
         x0 = leer_float("Valor de X a interpolar: ")
         grado = leer_grado(len(x))
         try:
@@ -132,7 +132,7 @@ def formatear_polinomio(coeficientes):
 
 def mostrar_polinomio(x, y):
     while True:
-        print("\n==== POLINOMIO INTERPOLANTE DE LAGRANGE ====")
+        print("\nPOLINOMIO INTERPOLANTE DE LAGRANGE")
         x0 = leer_float("Valor de X donde se evaluara el polinomio: ")
         grado = leer_grado(len(x))
         try:
@@ -160,7 +160,7 @@ def mostrar_polinomio(x, y):
 # Opción 3:comparación de aproximaciones y análisis de errores
 def analisis_errores(x, y):
     while True:
-        print("\n==== ANALISIS DE ERRORES DE LAGRANGE ====")
+        print("\nANALISIS DE ERRORES DE LAGRANGE")
         x0 = leer_float("Valor de X a interpolar: ")
         try:
             inicio = perf_counter()
@@ -201,7 +201,7 @@ def analisis_errores(x, y):
 def main():
     datos = None
     while True:
-        print("\n= MENU =")
+        print("\n MENU ")
         print("1. Interpolacion directa")
         print("2. Polinomio interpolante y evaluacion")
         print("3. Analisis de errores (comparacion de grados)")

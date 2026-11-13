@@ -45,7 +45,7 @@ def leer_puntos(minimo=2):
             except ValueError:
                 print("Fila inválida. Usá dos números separados por un espacio.")
     return x, y
-
+ 
 
 def leer_grado(cantidad):
     maximo = cantidad - 1

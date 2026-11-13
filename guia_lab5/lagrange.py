@@ -20,7 +20,7 @@ def _validar_datos(nodos, valores):
     if np.unique(x).size != x.size:
         raise ErrorInterpolacion("Los valores de X no pueden repetirse.")
     return x, y
-
+ 
 
 # Selección de nodos cercanos al objetivo 
 def seleccionar_nodos(nodos, valores, objetivo, grado):

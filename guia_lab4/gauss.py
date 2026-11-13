@@ -22,8 +22,35 @@ def eliminacion_gauss(A, b, tolerancia: float = 1e-12, cifras_significativas: in
 
     def redondear(valor):
         if cifras_significativas is None or valor == 0:
-            return float(valor)
-        return float(f"{valor:.{cifras_significativas}g}")
+            resultado = float(valor)
+        else:
+            resultado = float(f"{valor:.{cifras_significativas}g}")
+        return 0.0 if resultado == 0 else resultado
+
+    def formatear_numero(valor):
+        """Muestra números sin el punto decimal sobrante ni el cero negativo."""
+        valor = float(valor)
+        if valor == 0:
+            return "0"
+        return f"{valor:.15g}"
+
+    def matriz_a_texto(matriz, precision=6):
+        """Formatea matrices y normaliza ceros que quedarían como -0.000000."""
+        matriz = np.array(matriz, dtype=float, copy=True)
+        umbral_visual = 0.5 * 10 ** (-precision)
+        matriz[np.abs(matriz) <= umbral_visual] = 0.0
+
+        def formato_float(valor):
+            if abs(valor) <= umbral_visual:
+                return "0"
+            return f"{valor:.{precision}f}".rstrip("0").rstrip(".")
+
+        return np.array2string(
+            matriz,
+            precision=precision,
+            suppress_small=True,
+            formatter={"float_kind": formato_float},
+        )
 
     aumentada = np.column_stack((A, b))
     escala = max(1.0, float(np.linalg.norm(A, ord=np.inf)))
@@ -32,7 +59,7 @@ def eliminacion_gauss(A, b, tolerancia: float = 1e-12, cifras_significativas: in
     print("\n" + "="*50)
     print("1. MATRIZ AMPLIADA INICIAL")
     print("="*50)
-    print(np.array2string(aumentada, precision=6, suppress_small=True))
+    print(matriz_a_texto(aumentada))
 
     # Eliminación hacia adelante (hasta la penúltima columna)
     for columna in range(n - 1):
@@ -50,20 +77,20 @@ def eliminacion_gauss(A, b, tolerancia: float = 1e-12, cifras_significativas: in
                 aumentada[[columna, fila_intercambio]] = aumentada[[fila_intercambio, columna]]
                 print(f"Se cambiaron las filas {columna + 1} y {fila_intercambio + 1} porque el valor de la fila {columna + 1} en esta columna era 0.")
                 print("Matriz ampliada tras el intercambio:")
-                print(np.array2string(aumentada, precision=6, suppress_small=True))
+                print(matriz_a_texto(aumentada))
             else:
                 print(f"¡Atención! Todos los valores disponibles en la columna {columna + 1} son 0.")
                 print("El sistema no tiene una solución única (se evitará dividir por cero).")
                 raise SistemaSingularError("Sistema singular detectado por columna nula.")
 
         valor_pivote = redondear(aumentada[columna, columna])
-        print(f"Pivote elegido: fila {columna + 1}, columna {columna + 1}, valor = {valor_pivote}")
+        print(f"Pivote elegido: fila {columna + 1}, columna {columna + 1}, valor = {formatear_numero(valor_pivote)}")
         
         hubo_operacion = False
         for fila in range(columna + 1, n):
             if abs(aumentada[fila, columna]) > umbral:
                 factor = redondear(aumentada[fila, columna] / aumentada[columna, columna])
-                print(f"Operación: Fila {fila + 1} = Fila {fila + 1} - ({factor}) * Fila {columna + 1}")
+                print(f"Operación: Fila {fila + 1} = Fila {fila + 1} - ({formatear_numero(factor)}) * Fila {columna + 1}")
                 
                 for j in range(columna + 1, n + 1):
                     producto = redondear(factor * aumentada[columna, j])
@@ -73,7 +100,7 @@ def eliminacion_gauss(A, b, tolerancia: float = 1e-12, cifras_significativas: in
 
         if hubo_operacion:
             print("Matriz ampliada resultante después de las operaciones:")
-            print(np.array2string(aumentada, precision=6, suppress_small=True))
+            print(matriz_a_texto(aumentada))
         else:
             print("No se requirieron operaciones para anular los elementos debajo del pivote.")
 
@@ -84,7 +111,7 @@ def eliminacion_gauss(A, b, tolerancia: float = 1e-12, cifras_significativas: in
     print("\n" + "*"*50)
     print("2. MATRIZ TRIANGULAR SUPERIOR OBTENIDA")
     print("*"*50)
-    print(np.array2string(aumentada, precision=6, suppress_small=True))
+    print(matriz_a_texto(aumentada))
 
     print("\n" + "*"*50)
     print("3. SUSTITUCIÓN HACIA ATRÁS")
@@ -96,24 +123,24 @@ def eliminacion_gauss(A, b, tolerancia: float = 1e-12, cifras_significativas: in
         for j in range(fila + 1, n):
             valor_producto = redondear(aumentada[fila, j] * x[j])
             resto = redondear(resto + valor_producto)
-            terminos_str.append(f"({redondear(aumentada[fila, j])} * {redondear(x[j])})")
+            terminos_str.append(f"({formatear_numero(redondear(aumentada[fila, j]))} * {formatear_numero(redondear(x[j]))})")
         
         x[fila] = redondear((aumentada[fila, n] - resto) / aumentada[fila, fila])
         
         lado_izquierdo = f"x{fila + 1}"
         if terminos_str:
-            ecuacion = f"[{redondear(aumentada[fila, n])} - ({' + '.join(terminos_str)})] / {redondear(aumentada[fila, fila])}"
+            ecuacion = f"[{formatear_numero(redondear(aumentada[fila, n]))} - ({' + '.join(terminos_str)})] / {formatear_numero(redondear(aumentada[fila, fila]))}"
         else:
-            ecuacion = f"{redondear(aumentada[fila, n])} / {redondear(aumentada[fila, fila])}"
+            ecuacion = f"{formatear_numero(redondear(aumentada[fila, n]))} / {formatear_numero(redondear(aumentada[fila, fila]))}"
             
         print(f"Cálculo de {lado_izquierdo}:")
         print(f"  {lado_izquierdo} = {ecuacion}")
-        print(f"  {lado_izquierdo} = {x[fila]}\n")
+        print(f"  {lado_izquierdo} = {formatear_numero(x[fila])}\n")
 
     print("*"*50)
     print("4. VALORES FINALES OBTENIDOS PARA LAS INCÓGNITAS")
     print("*"*50)
     for i in range(n):
-        print(f"x_{i + 1} = {x[i]}")
+        print(f"x_{i + 1} = {formatear_numero(x[i])}")
 
     return x, aumentada

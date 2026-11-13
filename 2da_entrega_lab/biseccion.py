@@ -17,7 +17,7 @@ def evaluar_polinomio(coeficientes, x):
     #    Valor numérico del polinomio en x.
     
     return np.polyval(coeficientes, x)
-
+ 
 
 def ejecutar_biseccion(coeficientes):
    

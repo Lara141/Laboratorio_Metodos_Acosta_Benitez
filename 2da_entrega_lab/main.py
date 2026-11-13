@@ -22,7 +22,7 @@ def busqueda_autovalores(coeficientes, n):
         pendientes_neg = len([r for r in raices_encontradas if r < 0]) < max_neg
 
         # Mensaje predeterminado
-        mensaje_tanteo = "\n¿Querés saber cuantos y de que tipo son los autovalores? (s/n): "
+        mensaje_tanteo = "\n¿Querés encontrar los autovalores usando el metodo de tanteos? (s/n): "
         
         # Ajuste dinámico de los mensajes luego de haber realizado al menos un tanteo
         if busco_positivos or busco_negativos:
@@ -117,7 +117,7 @@ def ejecutar_flujo_fadeev():
     b_k_list, coeficientes, polinomio_str = calcular_fadeev(A)
     
     autovalores_reales = []
-    if leer_opcion_sn("\n¿Querés buscar los autovalores? (s/n): ") == 's':
+    if leer_opcion_sn("\n¿Querés saber cuantos y de que tipo son los autovalores? (s/n): ") == 's':
         autovalores_reales = busqueda_autovalores(coeficientes, n)
         
     raices_extra = []

@@ -94,7 +94,7 @@ def ingresar_sistema() -> np.ndarray:
         print("\nMatriz ingresada:")
         print(A)
 
-        opcion = leer_opcion_menu("\n¿Qué querés hacer?\n1. Aplicar Fadeev Leverrier\n2. Volver a ingresar el sistema\nElegí una opción (1/2): ", ['1', '2'])
+        opcion = leer_opcion_menu("\n¿Qué deseas hacer?\n1. Aplicar Fadeev Leverrier\n2. Volver a ingresar el sistema\nElegí una opción (1/2): ", ['1', '2'])
         if opcion == '1':
             return A
         elif opcion == '2':

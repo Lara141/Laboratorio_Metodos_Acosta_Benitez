@@ -8,9 +8,9 @@ def calcular_faddeev(A: np.ndarray):
     n = A.shape[0]
     identidad = np.eye(n)
     
-    print("\n" + "="*50)
+   
     print("MÉTODO DE FADDEEV-LEVERRIER")
-    print("="*50)
+    print("-"*50)
     
     B = A.copy()
     print("1. B_1 = A =\n", np.array2string(B, precision=4, suppress_small=True))
@@ -22,7 +22,7 @@ def calcular_faddeev(A: np.ndarray):
     print(f"\nb_1 = tr(B_1) = {suma_traza} = {fmt(b_1)}")
     
     for k in range(2, n + 1):
-        print(f"\n--- Iteración k = {k} ---")
+        print(f"\nIteración k = {k}")
         B_prev = B.copy()
         b_prev = b_k_list[-1]
         
@@ -47,9 +47,9 @@ def calcular_faddeev(A: np.ndarray):
     for b in b_k_list:
         coeficientes.append(-b)
         
-    print("\n" + "="*50)
+  
     print("POLINOMIO CARACTERÍSTICO")
-    print("="*50)
+    print("-"*50)
     terminos = [f"λ^{n}"]
     for i, b in enumerate(b_k_list, 1):
         pot = n - i
@@ -67,7 +67,7 @@ def calcular_autovector(A, lambd, tolerancia=1e-5):
     n = A.shape[0]
     identidad = np.eye(n)
     
-    print(f"\n" + "-"*40)
+  
     print(f"Cálculo de autovector para λ = {fmt(lambd)}")
     print("-" * 40)
     
@@ -82,7 +82,7 @@ def calcular_autovector(A, lambd, tolerancia=1e-5):
         if np.abs(M_gauss[max_idx, col]) > tolerancia:
             if max_idx != col:
                 M_gauss[[col, max_idx]] = M_gauss[[max_idx, col]]
-                print(f"-> Intercambio Fila {col+1} y Fila {max_idx+1}")
+                print(f"Intercambio Fila {col+1} y Fila {max_idx+1}")
             for row in range(col + 1, n):
                 if np.abs(M_gauss[row, col]) > tolerancia:
                     factor = M_gauss[row, col] / M_gauss[col, col]

@@ -5,7 +5,7 @@ def evaluar_polinomio(coeficientes, x):
     return np.polyval(coeficientes, x)
 
 def ejecutar_biseccion(coeficientes):
-    print("\n--- Método de Bisección ---")
+    print("\nMétodo de Bisección")
     while True:
         a = leer_float("Ingresá el extremo inicial del intervalo (a): ")
         b = leer_float("Ingresá el extremo final del intervalo (b): ")

@@ -4,7 +4,7 @@ from entrada import ingresar_sistema, leer_float, leer_opcion_sn, leer_opcion_me
 from fadeev_leverrier import calcular_faddeev, calcular_autovector
 from descartes import analisis_descartes
 from biseccion import evaluar_polinomio, ejecutar_biseccion
-from trapecios import metodo_trapecios
+from trapecios import ejecutar_trapecios
 
 def busqueda_autovalores(coeficientes, n):
     max_pos, max_neg = analisis_descartes(coeficientes)
@@ -157,9 +157,9 @@ def ejecutar_flujo_faddeev():
     
     fin = time.perf_counter()
     
-    print("\n" + "="*50)
+   
     print("RESUMEN FINAL DE FADDEEV-LEVERRIER")
-    print("="*50)
+    print("-"*50)
     print("Valores b_k calculados:")
     for i, b in enumerate(b_k_list, 1):
         print(f"b_{i} = {b:g}")
@@ -193,9 +193,9 @@ def ejecutar_flujo_faddeev():
 
 def main():
     while True:
-        print("\n" + "*"*40)
+     
         print(" MENÚ PRINCIPAL ".center(40, "*"))
-        print("*"*40)
+        print("\n")
         print("1. Resolver un problema con Faddeev-Leverrier")
         print("2. Resolver un problema con trapecios")
         print("3. Salir")
@@ -205,7 +205,7 @@ def main():
         if opcion == "1":
             ejecutar_flujo_faddeev()
         elif opcion == "2":
-            metodo_trapecios()
+            ejecutar_trapecios()
         elif opcion == "3":
             print("Fin del programa. ¡Éxitos con el proyecto!")
             break

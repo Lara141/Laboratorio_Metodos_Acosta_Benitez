@@ -14,9 +14,9 @@ def contar_cambios_signo(coeficientes):
 def analisis_descartes(coeficientes):
     n = len(coeficientes) - 1
     
-    print("\n" + "="*50)
+   
     print("REGLA DE LOS SIGNOS DE DESCARTES")
-    print("="*50)
+    print("-"*50)
     
     # Raíces positivas p(λ)
     cambios_pos = contar_cambios_signo(coeficientes)
@@ -34,7 +34,7 @@ def analisis_descartes(coeficientes):
             
     cambios_neg = contar_cambios_signo(coef_neg)
     print("\nAnálisis para raíces negativas p(-λ):")
-    print(f"-> Según los cambios de signo en p(-λ), podría haber hasta {cambios_neg} raíz/raíces real(es) negativa(s).")
+    print(f" Según los cambios de signo en p(-λ), podría haber hasta {cambios_neg} raíz/raíces real(es) negativa(s).")
     
     print("\nNota: Descartes indica una cantidad máxima posible de raíces reales, no la cantidad exacta. Las raíces pueden ser menos si existen raíces complejas o de multiplicidad par.")
     

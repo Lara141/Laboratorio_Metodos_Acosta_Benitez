@@ -203,8 +203,8 @@ def main():
         print("\n")
         print(" MENÚ PRINCIPAL ".center(40, "*"))
        # print("\n")
-        print("1. Resolver un problema con Fadeev-Leverrier")
-        print("2. Resolver un problema con trapecios")
+        print("1. Metodo de Fadeev Leverrier")
+        print("2. Metodod de Trapecios")
         print("3. Salir")
         
         opcion = leer_opcion_menu("\nElegí una opción: ", ['1', '2', '3'])

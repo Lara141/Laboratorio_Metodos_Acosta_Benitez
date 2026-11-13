@@ -74,6 +74,7 @@ def calcular_fadeev(A: np.ndarray):
     for b in b_k_list:
         coeficientes.append(-b)
 
+    print("\n")
     print("POLINOMIO CARACTERÍSTICO")
     print("-"*50)
     terminos = [f"λ^{n}"]

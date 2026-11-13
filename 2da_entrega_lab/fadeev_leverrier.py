@@ -1,4 +1,4 @@
-#Cálculo de autovalores mediante el método de Fadeev-LeVerrier.
+#Cálculo de autovalores mediante el método de Fadeev LeVerrier.
 #Este módulo desarrolla la construcción del polinomio característico a partir de
 #las trazas de matrices auxiliares y muestra cómo obtener un vector propio asociado
 #para un autovalor dado mediante eliminación gaussiana.
@@ -7,11 +7,22 @@ import numpy as np
 
 
 def fmt(val, tol=1e-10):
-    #Formatea un valor numérico para mostrarlo en consola.
-    #Convierte valores cercanos a cero en '0' para mejorar la legibilidad.
-    if abs(val) < tol:
+    # Formatea un valor numérico para mostrarlo en consola.
+    # Convierte explícitamente a float nativo para evitar representaciones como np.float64(...)
+    val_float = float(val)
+    
+    # Convierte valores cercanos a cero en '0' para mejorar la legibilidad y evitar '-0' o '-0.0'
+    if abs(val_float) < tol:
         return "0"
-    return f"{val:g}"
+        
+    # El formato :g elimina automáticamente los ceros no significativos y el punto 
+    # decimal en números enteros (ej: 3.0 -> 3, 3.25 -> 3.25)
+    return f"{val_float:g}"
+
+def format_array(arr):
+    # Función auxiliar para aplicar el formato uniformemente a matrices y vectores.
+    # El parámetro 'formatter' delega la impresión de cada número a nuestra función fmt.
+    return np.array2string(arr, formatter={'float_kind': lambda x: fmt(x)})
 
 
 def calcular_fadeev(A: np.ndarray):
@@ -29,7 +40,7 @@ def calcular_fadeev(A: np.ndarray):
     print("-"*50)
 
     B = A.copy()
-    print("1. B_1 = A =\n", np.array2string(B, precision=4, suppress_small=True))
+    print("1. B_1 = A =\n", format_array(B))
 
     b_1 = np.trace(B)
     b_k_list = [b_1]
@@ -46,11 +57,11 @@ def calcular_fadeev(A: np.ndarray):
         resta = B_prev - bI
 
         print(f"Fórmula: B_{k} = A * (B_{k-1} - b_{k-1}I)")
-        print(f"\nb_{k-1}I =\n", np.array2string(bI, precision=4, suppress_small=True))
-        print(f"\n(B_{k-1} - b_{k-1}I) =\n", np.array2string(resta, precision=4, suppress_small=True))
+        print(f"\nb_{k-1}I =\n", format_array(bI))
+        print(f"\n(B_{k-1} - b_{k-1}I) =\n", format_array(resta))
 
         B = A @ resta
-        print(f"\nB_{k} =\n", np.array2string(B, precision=4, suppress_small=True))
+        print(f"\nB_{k} =\n", format_array(B))
 
         tr_B = np.trace(B)
         b_k = tr_B / k
@@ -69,8 +80,14 @@ def calcular_fadeev(A: np.ndarray):
     for i, b in enumerate(b_k_list, 1):
         pot = n - i
         lam_str = f"λ^{pot}" if pot > 1 else ("λ" if pot == 1 else "")
-        signo = "+" if -b >= 0 else "-"
-        terminos.append(f" {signo} {abs(b):g}{lam_str}")
+        
+        # Limpiamos el valor para el signo y para evitar arrastrar un -0 a la impresión
+        b_float = float(b)
+        if abs(b_float) < 1e-10:
+            b_float = 0.0
+            
+        signo = "+" if -b_float >= 0 else "-"
+        terminos.append(f" {signo} {fmt(abs(b_float))}{lam_str}")
 
     polinomio_str = "".join(terminos)
     if polinomio_str.startswith(" + "):
@@ -97,7 +114,7 @@ def calcular_autovector(A, lambd, tolerancia=1e-5):
 
     M = A - lambd * identidad
     print(f"Sistema homogéneo (A - λI)v = 0\nMatriz (A - {fmt(lambd)}I):")
-    print(np.array2string(M, precision=4, suppress_small=True))
+    print(format_array(M))
 
     print("\nAplicando eliminación de Gauss por filas:")
     M_gauss = M.copy()
@@ -114,7 +131,7 @@ def calcular_autovector(A, lambd, tolerancia=1e-5):
                     print(f"-> Fila {row+1} = Fila {row+1} - ({fmt(factor)}) * Fila {col+1}")
 
     print("\nMatriz escalonada:")
-    print(np.array2string(M_gauss, precision=4, suppress_small=True))
+    print(format_array(M_gauss))
 
     v = np.zeros(n)
     v[-1] = 1.0
@@ -128,12 +145,12 @@ def calcular_autovector(A, lambd, tolerancia=1e-5):
             v[row] = 1.0
 
     print("Vector asociado resultante v =")
-    print(np.array2string(v, precision=4, suppress_small=True))
+    print(format_array(v))
 
     Av = A @ v
     lv = lambd * v
     print(f"\nComprobación:")
-    print(f"A * v = {np.array2string(Av, precision=4, suppress_small=True)}")
-    print(f"λ * v = {np.array2string(lv, precision=4, suppress_small=True)}")
+    print(f"A * v = {format_array(Av)}")
+    print(f"λ * v = {format_array(lv)}")
 
     return v

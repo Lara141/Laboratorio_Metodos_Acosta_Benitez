@@ -61,7 +61,7 @@ def leer_opcion_menu(mensaje: str, opciones_validas: list) -> str:
 
 def ingresar_sistema() -> np.ndarray:
     #Pide al usuario una matriz cuadrada y la devuelve como array NumPy.
-    #Se usa para cargar un sistema lineal para aplicar el algoritmo de Faddeev-LeVerrier.
+    #Se usa para cargar un sistema lineal para aplicar el algoritmo de Fadeev LeVerrier.
     
     print("\n--- Ingreso de la Matriz del Sistema ---")
     print("El sistema debe ser cuadrado (misma cantidad de ecuaciones e incógnitas).")
@@ -94,7 +94,7 @@ def ingresar_sistema() -> np.ndarray:
         print("\nMatriz ingresada:")
         print(A)
 
-        opcion = leer_opcion_menu("\n¿Qué querés hacer?\n1. Aplicar Faddeev-Leverrier\n2. Volver a ingresar el sistema\nElegí una opción (1/2): ", ['1', '2'])
+        opcion = leer_opcion_menu("\n¿Qué querés hacer?\n1. Aplicar Fadeev Leverrier\n2. Volver a ingresar el sistema\nElegí una opción (1/2): ", ['1', '2'])
         if opcion == '1':
             return A
         elif opcion == '2':

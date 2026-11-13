@@ -22,7 +22,7 @@ def busqueda_autovalores(coeficientes, n):
         pendientes_neg = len([r for r in raices_encontradas if r < 0]) < max_neg
 
         # Mensaje predeterminado
-        mensaje_tanteo = "\n¿Querés tantear raíces reales en un intervalo? (s/n): "
+        mensaje_tanteo = "\n¿Querés saber cuantos y de que tipo son los autovalores? (s/n): "
         
         # Ajuste dinámico de los mensajes luego de haber realizado al menos un tanteo
         if busco_positivos or busco_negativos:
@@ -163,7 +163,7 @@ def ejecutar_flujo_fadeev():
     fin = time.perf_counter()
     
    
-    print("RESULTADOS FINALES")
+    print("\n RESULTADOS FINALES")
     print("-"*50)
     print("Valores b_k calculados:")
     for i, b in enumerate(b_k_list, 1):
@@ -204,7 +204,7 @@ def main():
         print(" MENÚ PRINCIPAL ".center(40, "*"))
        # print("\n")
         print("1. Metodo de Fadeev Leverrier")
-        print("2. Metodod de Trapecios")
+        print("2. Metodo de Trapecios")
         print("3. Salir")
         
         opcion = leer_opcion_menu("\nElegí una opción: ", ['1', '2', '3'])
